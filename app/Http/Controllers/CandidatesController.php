@@ -247,6 +247,7 @@ class CandidatesController extends Controller
         
         if (count($keywords)) {
             $match = (count($found) / count($keywords)) * 100;
+            $match = $match > 100 ? 100 : $match;
         }
         
         return array(
