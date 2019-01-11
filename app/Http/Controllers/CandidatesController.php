@@ -234,8 +234,11 @@ class CandidatesController extends Controller
         $keywords = array_unique(array_filter(explode(',', $keywords)));
         
         foreach ($keywords as $keyword) {
-            if (stristr($cvText, $keyword) !== false) {
-                $found[] = $keyword;
+            $subkeywords = explode('|', $keyword);
+            foreach ($subkeywords as $skeyword) {
+                if (stristr($cvText, $skeyword) !== false) {
+                    $found[] = $keyword;
+                }
             }
         }
         
@@ -270,12 +273,15 @@ class CandidatesController extends Controller
             $keywords = array_unique(array_filter(explode(',', $keywords)));
             
             foreach ($keywords as $keyword) {
-                if (stristr($cvText, $keyword) !== false) {
-                    if ( in_array($question->type, ['Select', 'Check']) ) {
-                        $question->options = Option::where('qid', $question->id)->get();
+                $subkeywords = explode('|', $keyword);
+                foreach ($subkeywords as $skeyword) {
+                    if (stristr($cvText, $skeyword) !== false) {
+                        if ( in_array($question->type, ['Select', 'Check']) ) {
+                            $question->options = Option::where('qid', $question->id)->get();
+                        }
+                        $selectedQuestions[] = $question;
+                        break 2;
                     }
-                    $selectedQuestions[] = $question;
-                    break;
                 }
             }
         }
