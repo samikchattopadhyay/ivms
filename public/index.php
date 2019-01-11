@@ -37,10 +37,6 @@ require __DIR__.'/../vendor/autoload.php';
 
 $app = require_once __DIR__.'/../bootstrap/app.php';
 
-echo 2;
-
-
-
 /*
 |--------------------------------------------------------------------------
 | Run The Application
