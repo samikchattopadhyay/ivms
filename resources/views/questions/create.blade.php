@@ -52,10 +52,11 @@
     						
     						<div class="form-group{{ $errors->has('question') ? ' has-error' : '' }}">
                                 <label for="question">Question</label>
-                                <input id="question" type="text" required
-                                	class="form-control" name="question"
-                                    value="{{ empty(old('question', '')) ? (isset($question->question) ? $question->question : '') : old('question') }}"
-                                    autofocus> 
+                                <textarea id="question" 
+                                	class="form-control" 
+                                	name="question"
+                                    required 
+                                    autofocus>{{ empty(old('question', '')) ? (isset($question->question) ? $question->question : '') : old('question') }}</textarea>
                                 @if ($errors->has('name')) 
                                 	<span class="help-block"> 
                                 		<strong>{{ $errors->first('question') }}</strong>
@@ -66,10 +67,12 @@
     						
     						<div class="form-group{{ $errors->has('keywords') ? ' has-error' : '' }}">
                                 <label for="keywords">Keywords <em style="color: #AAA;">( Comma separated values )</em></label>
-                                <textarea id="keywords" 
+                                <input type="text" 
+                                	id="keywords" 
                                 	class="form-control"
                                     name="keywords"
-                                    required>{{ empty(old('keywords', '')) ? (isset($question->keywords) ? $question->keywords : '') : old('keywords') }}</textarea>
+                                    value="{{ empty(old('keywords', '')) ? (isset($question->keywords) ? $question->keywords : '') : old('keywords') }}"
+                                    required>
                                 @if ($errors->has('name')) 
                                 	<span class="help-block"> 
                                 		<strong>{{ $errors->first('keywords') }}</strong>
