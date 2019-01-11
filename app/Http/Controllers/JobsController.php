@@ -29,6 +29,7 @@ class JobsController extends Controller
     public function create()
     {
         return view('jobs.create', [
+            'job' => false,
             'qgroups' => QuestionGroup::all(),
             'action' => 'Add New'
         ]);

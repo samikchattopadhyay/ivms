@@ -177,19 +177,27 @@
 							<div class="form-group">
 								<label style="clear: both;">Question Groups</label>
 								<div class="row">
+								
 									@php
-									$qGroups = explode(',', $job->qgroups);
+										$jobQGroups = array();
 									@endphp
+									
+									@if (isset($job->qgroups))
+										@php
+											$jobQGroups = explode(',', $job->qgroups);
+										@endphp
+									@endif
+										
 									@if (isset($qgroups))
 										@foreach ($qgroups as $qg)
 											<div class="checkbox col col-md-4">
-            									<label><input type="checkbox" name="qgroups[]" value="{{ $qg->id }}" {{ in_array($qg->id, $qGroups) ? 'checked' : ''}}> {{ $qg->group_name }}</label>
+            									<label><input type="checkbox" name="qgroups[]" value="{{ $qg->id }}" {{ in_array($qg->id, $jobQGroups) ? 'checked' : ''}}> {{ $qg->group_name }}</label>
             								</div>
 										@endforeach
 									@endif
+									
 								</div>
 							</div>
-
 
 						</div>
     				</div>
