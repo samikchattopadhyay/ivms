@@ -233,7 +233,10 @@ class CandidatesController extends Controller
         $keywords = implode(',', $keywords);
         $keywords = array_unique(array_filter(explode(',', $keywords)));
         
-        foreach ($keywords as $keyword) {
+        $options = $this->getQuestionOptions($jobId);
+        $extendedKeywords = array_merge($keywords, $options);
+        
+        foreach ($extendedKeywords as $keyword) {
             $subkeywords = explode('|', $keyword);
             foreach ($subkeywords as $skeyword) {
                 if (stristr($cvText, $skeyword) !== false) {
@@ -272,7 +275,10 @@ class CandidatesController extends Controller
             $keywords = $question->keywords;
             $keywords = array_unique(array_filter(explode(',', $keywords)));
             
-            foreach ($keywords as $keyword) {
+            $options = $this->getQuestionOptions($jobId);
+            $extendedKeywords = array_merge($keywords, $options);
+            
+            foreach ($extendedKeywords as $keyword) {
                 $subkeywords = explode('|', $keyword);
                 foreach ($subkeywords as $skeyword) {
                     if (stristr($cvText, $skeyword) !== false) {
@@ -289,4 +295,22 @@ class CandidatesController extends Controller
         return $selectedQuestions;
     }
     
+    private function getQuestionOptions($jobId)
+    {
+        $options = [];
+        $qgroups = Job::find($jobId);
+        
+        if (!empty($qgroups->qgroups)) {
+            $qgroups = explode(',', $qgroups->qgroups);
+            $optionsRes = Option::whereIn('qid', function ($query1) use ($qgroups) {
+                $query1->select('id')
+                ->from( with( (new Question)->getTable() ) )
+                ->whereIn('gid', $qgroups);
+            })->get();
+            foreach ($optionsRes as $opt) {
+                $options[] = $opt->label;
+            }
+        }
+        return $options;
+    }
 }
