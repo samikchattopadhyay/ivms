@@ -36,7 +36,7 @@ class CandidatesController extends Controller
         $candidates = $results->paginate(20);
         
         return view('candidates.index', [
-            'job' => $job,
+            'job' => isset($job) ? $job : '',
             'candidates' => $candidates
         ]);
     }
