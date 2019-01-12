@@ -56,7 +56,7 @@
 								<th>Compensation</th>
 								<th>Vacancies</th>
 								<th>Expiry</th>
-								<th width="70">Actions</th>
+								<th width="100">Actions</th>
 							</tr>
 							
 							@if (isset($jobs) && count($jobs))
@@ -75,6 +75,13 @@
         										action="{{ route('job.destroy', ['id' => $job->id]) }}" 
         										onsubmit="return confirm('Are you sure?')">
         									
+        										<a href="{{ route('candidate.index', ['jid' => $job->id]) }}" 
+            										role="button" 
+            										class="btn btn-default btn-xs"
+            										title="Candidates">
+            										<i class="fa fa-user"></i>
+            									</a>
+            									
         										<a href="{{ route('job.edit', ['id' => $job->id]) }}" 
             										role="button" 
             										class="btn btn-default btn-xs"

@@ -20,14 +20,19 @@ class CandidatesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         // Candidate::paginate(10)
-        $candidates = DB::table('candidates')
-            ->leftJoin('jobs', 'candidates.job_id', '=', 'jobs.id')
-            ->select('candidates.*', 'jobs.position as job_position')
-            ->orderBy('candidates.id', 'desc')
-            ->paginate(20);
+        $results = DB::table('candidates')
+        ->leftJoin('jobs', 'candidates.job_id', '=', 'jobs.id')
+        ->select('candidates.*', 'jobs.position as job_position')
+        ->orderBy('candidates.id', 'desc');
+        
+        if (!empty($request->jid)) {
+            $results->where('job_id', $request->jid);
+        }
+        
+        $candidates = $results->paginate(20);
         
         return view('candidates.index', [
             'candidates' => $candidates
