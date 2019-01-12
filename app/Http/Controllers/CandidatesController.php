@@ -27,7 +27,7 @@ class CandidatesController extends Controller
             ->leftJoin('jobs', 'candidates.job_id', '=', 'jobs.id')
             ->select('candidates.*', 'jobs.position as job_position')
             ->orderBy('candidates.id', 'desc')
-            ->paginate(10);
+            ->paginate(20);
         
         return view('candidates.index', [
             'candidates' => $candidates
