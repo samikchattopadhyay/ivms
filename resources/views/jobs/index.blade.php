@@ -56,6 +56,7 @@
 								<th>Compensation</th>
 								<th>Vacancies</th>
 								<th>Expiry</th>
+								<th>CV#</th>
 								<th width="100">Actions</th>
 							</tr>
 							
@@ -70,6 +71,7 @@
         								<td>{{ $job->compensation }}</td>
         								<td>{{ $job->vacancies }}</td>
         								<td>{{ $job->expiry_date }}</td>
+        								<td>{{ $job->cv_count }}</td>
         								<td>
         									<form method="POST"
         										action="{{ route('job.destroy', ['id' => $job->id]) }}" 

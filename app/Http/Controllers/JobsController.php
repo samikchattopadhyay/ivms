@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use App\Job;
 use App\QuestionGroup;
+use App\Job;
 
 class JobsController extends Controller
 {
@@ -15,8 +16,16 @@ class JobsController extends Controller
      */
     public function index()
     {
+        $jobs = DB::table('jobs')
+        ->select(array(
+            'jobs.*',
+            DB::raw('COUNT(candidates.id) as cv_count'))
+        )
+        ->leftJoin('candidates', 'jobs.id', '=', 'candidates.job_id')
+        ->groupBy('jobs.id');
+        
         return view('jobs.index', [
-            'jobs' => Job::paginate(10),
+            'jobs' => $jobs->paginate(10),
             'action' => 'Add New'
         ]);
     }
