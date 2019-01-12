@@ -130,7 +130,7 @@
             									<a href="{{ route('candidates.recalculate', ['id' => $candidate->id]) }}" 
             										role="button" 
             										style="color: #000;"
-            										class="btn btn-primary btn-xs"
+            										class="btn btn-default btn-xs"
             										title="Recalculate match %">
             										<i class="fa fa-calculator"></i>
             									</a>
@@ -138,7 +138,7 @@
             									<a href="{{ route('candidate.edit', ['id' => $candidate->id]) }}" 
             										role="button" 
             										style="color: #000;"
-            										class="btn btn-warning btn-xs"
+            										class="btn btn-default btn-xs"
             										title="Edit">
             										<i class="fa fa-edit"></i>
             									</a>
