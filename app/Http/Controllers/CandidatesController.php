@@ -233,7 +233,8 @@ class CandidatesController extends Controller
         $keywords = implode(',', $keywords);
         $keywords = array_unique(array_filter(explode(',', $keywords)));
         
-        $options = $this->getQuestionOptions($jobId);
+        $options = array();
+        //$options = $this->getQuestionOptions($jobId);
         $extendedKeywords = array_merge($keywords, $options);
         
         foreach ($extendedKeywords as $keyword) {
