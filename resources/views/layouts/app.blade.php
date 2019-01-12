@@ -56,6 +56,29 @@
 	<!-- jQuery 3 -->
 	<script src="/bower_components/jquery//dist/jquery.min.js"></script>
 	
+	<script>
+	//File upload formSubmitSuccess
+	function formSubmit (formId, callback) {
+		var targetUrl = $('#' + formId).attr('action');
+	    var formData = new FormData($('#' + formId)[0]);
+	    $.ajax({
+	        url: targetUrl,
+	        type: 'POST',
+	        data: formData,
+	        cache: false,
+	        contentType: false,
+	        processData: false,
+	        complete : function(resp) {
+	            if (callback != undefined) {
+	            	callback(resp.responseJSON);
+	            } else {
+	            	alert(resp.message);
+	            }
+	        }
+	    });
+	}
+	</script>
+	
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 	<div class="fixed">

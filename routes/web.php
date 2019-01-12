@@ -31,6 +31,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/candidates/recalc', 'CandidatesController@recalc')->name('candidates.recalculate');
     Route::get('/candidates/qset', 'CandidatesController@qset')->name('candidates.qset');
     Route::get('/candidates/answer', 'CandidatesController@answer')->name('candidates.answer');
+    Route::get('/candidates/comments/{cid}', 'CandidatesController@comments')->name('candidates.comments');
+    Route::post('/candidates/comment', 'CandidatesController@comment')->name('candidates.comment');
     
 });
 

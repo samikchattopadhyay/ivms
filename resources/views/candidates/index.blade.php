@@ -52,13 +52,12 @@
 						<table class="table table-hover">
 							<tr>
 								<th>Name</th>
-								<th>Email</th>
 								<th>Source</th>
 								<th width="100">Notice Period</th>
 								<th>Job Position</th>
 								<th>Location</th>
 								<th>Match %</th>
-								<th width="120">Actions</th>
+								<th width="170">Actions</th>
 							</tr>
 							
 							@if (isset($candidates) && count($candidates))
@@ -67,7 +66,6 @@
 									
 									<tr>
         								<td>{{ $candidate->name }}</td>
-        								<td>{{ $candidate->email }}</td>
         								<td>{{ $candidate->source }}</td>
         								<td>{{ $candidate->notice_period }} days</td>
         								<td>{{ $candidate->job_position }}</td>
@@ -100,7 +98,28 @@
         										action="{{ route('candidate.destroy', ['id' => $candidate->id]) }}" 
         										onsubmit="return confirm('Are you sure?')">
         									
-        									
+        										<!-- 
+    											<a href="javascript: void(0)" 
+            										role="button" 
+            										class="btn btn-default btn-xs comment"
+            										data-index="{{ $candidate->id }}"
+            										data-toggle="modal" 
+            										data-target="#modal-preview"
+            										title="Preview">
+            										<i class="fa fa-eye"></i>
+            									</a>
+            									-->
+            									
+        										<a href="javascript: void(0)" 
+            										role="button" 
+            										class="btn btn-default btn-xs comment"
+            										data-index="{{ $candidate->id }}"
+            										data-toggle="modal" 
+            										data-target="#modal-comment"
+            										title="Comment / Note">
+            										<i class="fa fa-comment"></i>
+            									</a>
+            									
         										<a href="{{ route('candidates.qset', ['id' => $candidate->id]) }}" 
             										role="button" 
             										class="btn btn-default btn-xs"
@@ -110,13 +129,15 @@
             									
             									<a href="{{ route('candidates.recalculate', ['id' => $candidate->id]) }}" 
             										role="button" 
-            										class="btn btn-default btn-xs"
+            										style="color: #000;"
+            										class="btn btn-primary btn-xs"
             										title="Recalculate match %">
             										<i class="fa fa-calculator"></i>
             									</a>
             									
             									<a href="{{ route('candidate.edit', ['id' => $candidate->id]) }}" 
             										role="button" 
+            										style="color: #000;"
             										class="btn btn-warning btn-xs"
             										title="Edit">
             										<i class="fa fa-edit"></i>
@@ -126,6 +147,7 @@
 												<input type="hidden" name="_token" value="{{ csrf_token() }}"> 
 												<button type="submit" 
             										class="btn btn-danger btn-xs"
+            										style="color: #000;"
             										title="Delete">
             										<i class="fa fa-trash"></i>
             									</button>
@@ -161,5 +183,71 @@
 	<!-- /.content -->
 </div>
 <!-- /.content-wrapper -->
+
+<div class="modal fade" id="modal-comment">
+	<form id="comment-form" action="/candidates/comment">
+		{{ csrf_field() }} 
+		<input type="hidden" name="candidate" id="candidate-hid" value="" />
+    	<div class="modal-dialog">
+    		<div class="modal-content">
+    			<div class="modal-header">
+    				<button type="button" class="close" data-dismiss="modal"
+    					aria-label="Close">
+    					<span aria-hidden="true">&times;</span>
+    				</button>
+    				<h4 class="modal-title">Comments</h4>
+    			</div>
+    			<div class="modal-body">
+    				<div class="row">
+    					<div class="col-md-12" id="comments-list">
+    						
+    					</div>
+    				</div>
+    				<div class="row">
+    					<div class="col-md-12">
+    						<div class="form-group">
+                              	<textarea class="form-control" 
+                              	id="comment-text" 
+                              	name="comment"
+                              	placeholder="Enter your comment here"></textarea>
+                            </div>
+    					</div>
+    				</div>
+    			</div>
+    			<div class="modal-footer">
+    				<button type="submit" class="btn btn-primary">Comment</button>
+    			</div>
+    		</div>
+    		<!-- /.modal-content -->
+    	</div>
+    	<!-- /.modal-dialog -->
+	</form>
+</div>
+<!-- /.modal -->
+
+<script>
+$(document).ready(function() {
+
+	$('.comment').on('click', function(e) {
+		e.preventDefault();
+		var cId = $(this).data('index');
+		$('#candidate-hid').val(cId);
+		$.get('/candidates/comments/' + cId, function(comments) {
+			$('#comments-list').html(comments);
+		});
+	});
+
+	$('#comment-form').on('submit', function(e) {
+		e.preventDefault();
+		formSubmit ('comment-form', function(args) {
+			if (args.success) {
+				$('#comment-text').val('');
+				$('#modal-comment').modal('toggle');
+			}
+		});
+	});
+	
+});
+</script>
 
 @endsection

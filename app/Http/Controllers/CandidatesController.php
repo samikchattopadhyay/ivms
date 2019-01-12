@@ -11,7 +11,8 @@ use App\Question;
 use File;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use App\Option;
-
+use App\CandidateComment;
+use Illuminate\Support\Facades\Auth;
 
 class CandidatesController extends Controller
 {
@@ -189,7 +190,7 @@ class CandidatesController extends Controller
         Candidate::where('id', $id)->delete();
         return redirect()->intended('/candidate');
     }
-    
+
     public function recalc(Request $request) 
     {
         $candidate = Candidate::findOrFail($request->id);
@@ -203,7 +204,7 @@ class CandidatesController extends Controller
         
         return redirect()->intended('/candidate');
     }
-    
+
     public function qset(Request $request)
     {
         $candidate = Candidate::findOrFail($request->id);
@@ -214,6 +215,26 @@ class CandidatesController extends Controller
             'questions' => $questions
         ]);
         
+    }
+
+    public function comments($cid) {
+        return view('candidates.comments', [
+            'comments' => CandidateComment::where('cid', $cid)
+                ->leftJoin('users', 'users.id', '=', 'candidate_comments.uid')
+                ->select(['candidate_comments.*', 'users.name as username'])
+                ->get()
+        ]);
+    }
+    
+    public function comment(Request $request) 
+    {
+        return response()->json([
+            'success' => CandidateComment::create([
+                'comment' => $request['comment'],
+                'cid' => $request['candidate'],
+                'uid' => Auth::user()->id
+            ])
+        ]);
     }
     
     private function studyTheCv($cvText, $jobId) 
@@ -263,7 +284,7 @@ class CandidatesController extends Controller
             'match' => $match
         );
     }
-    
+
     private function studyTheCvAndGetQuestions($cvText, $jobId)
     {
         $cvText = trim($cvText);
@@ -303,7 +324,7 @@ class CandidatesController extends Controller
         
         return $selectedQuestions;
     }
-    
+
     private function getQuestionOptions($jobId)
     {
         $options = [];
