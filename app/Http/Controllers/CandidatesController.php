@@ -30,11 +30,13 @@ class CandidatesController extends Controller
         
         if (!empty($request->jid)) {
             $results->where('job_id', $request->jid);
+            $job = Job::find($request->jid);
         }
         
         $candidates = $results->paginate(20);
         
         return view('candidates.index', [
+            'job' => $job,
             'candidates' => $candidates
         ]);
     }

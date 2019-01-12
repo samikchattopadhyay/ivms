@@ -21,7 +21,7 @@
 			<div class="col-xs-12">
 				<div class="box">
 					<div class="box-header">
-						<h3 class="box-title">List All</h3>
+						<h3 class="box-title">List All {{ isset($job) ? ' - ' . $job->position : '' }} ({{ $candidates->total() }})</h3>
 						<div class="box-tools">
 							
 							<form action="">
