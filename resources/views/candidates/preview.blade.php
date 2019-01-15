@@ -99,9 +99,9 @@
         </script>
 	</div>
 </div>
-<hr>
 
 @if (count($comments))
+<hr>
 <div class="row">
 	<div class="col-md-12">
 		<h3>Comments</h3>
