@@ -45,6 +45,8 @@ class CandidatesController extends Controller
         
         if (!$filtered) {
             $candidates = $results->paginate(15);
+        } else {
+            $candidates = $results->get();
         }
         
         return view('candidates.index', [
