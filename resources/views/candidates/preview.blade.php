@@ -11,7 +11,7 @@
 		</p>
 		<p>
 			@php
-				$keywords = array_filter($keywords);
+				$keywords = array_unique($keywords);
 			@endphp
 			
 			@foreach ($keywords as $keyword)
