@@ -24,7 +24,7 @@ class CandidatesController extends Controller
      */
     public function index(Request $request)
     {
-        $filtered = false;
+        $rpp = 15;
         
         // Candidate::paginate(10)
         $results = DB::table('candidates')
@@ -33,21 +33,17 @@ class CandidatesController extends Controller
         ->orderBy('candidates.id', 'desc');
         
         if (!empty($request->jid)) {
-            $filtered = true;
+            $rpp = 1000;
             $results->where('job_id', $request->jid);
             $job = Job::find($request->jid);
         }
         
         if (!empty($request->s)) {
-            $filtered = true;
+            $rpp = 1000;
             $results->where('name', 'like', '%' . $request->s . '%');
         }
         
-        if (!$filtered) {
-            $candidates = $results->paginate(15);
-        } else {
-            $candidates = $results->get();
-        }
+        $candidates = $results->paginate($rpp);
         
         return view('candidates.index', [
             'job' => isset($job) ? $job : '',
