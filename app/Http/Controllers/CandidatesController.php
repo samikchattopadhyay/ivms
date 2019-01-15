@@ -24,6 +24,8 @@ class CandidatesController extends Controller
      */
     public function index(Request $request)
     {
+        $filtered = false;
+        
         // Candidate::paginate(10)
         $results = DB::table('candidates')
         ->leftJoin('jobs', 'candidates.job_id', '=', 'jobs.id')
@@ -31,15 +33,19 @@ class CandidatesController extends Controller
         ->orderBy('candidates.id', 'desc');
         
         if (!empty($request->jid)) {
+            $filtered = true;
             $results->where('job_id', $request->jid);
             $job = Job::find($request->jid);
         }
         
         if (!empty($request->s)) {
+            $filtered = true;
             $results->where('name', 'like', '%' . $request->s . '%');
         }
         
-        $candidates = $results->paginate(20);
+        if (!$filtered) {
+            $candidates = $results->paginate(15);
+        }
         
         return view('candidates.index', [
             'job' => isset($job) ? $job : '',
