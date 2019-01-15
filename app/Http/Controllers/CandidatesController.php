@@ -9,6 +9,7 @@ use App\Candidate;
 use App\Job;
 use App\Question;
 use File;
+use Response;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use App\Option;
 use App\CandidateComment;
@@ -253,11 +254,32 @@ class CandidatesController extends Controller
         
         $questions = $this->studyTheCvAndGetQuestions($candidate->cv_text, $candidate->job_id);
         
+        $comments = CandidateComment::where('cid', $cid)
+        ->leftJoin('users', 'users.id', '=', 'candidate_comments.uid')
+        ->select(['candidate_comments.*', 'users.name as username'])
+        ->get();
+        
         return view('candidates.preview', [
             'candidate' => $candidate,
             'questions' => $questions,
+            'answers' => array(),
+            'comments' => $comments,
             'keywords' => isset($study['found']) ? explode(',', $study['found']) : array()
         ]);
+    }
+    
+    /**
+     * Load resume/cv resource.
+     *
+     * @param  string  $name
+     * @return \Illuminate\Http\Response
+     */
+    public function load($cid) {
+        $candidate = Candidate::findOrFail($cid);
+        $path = storage_path().'/app/' . $candidate->cv_file;
+        if (file_exists($path)) {
+            return Response::download($path);
+        }
     }
     
     private function studyTheCv($cvText, $jobId) 

@@ -20,19 +20,18 @@
         </p>
 	</div>
 	<div class="col-md-2">
-		
-		<div id="sellPerCirc" class="perCirc">
-            <div class="perCircInner">
-                <div class="perCircStat">0%</div><div>Match</div>
+		<center>
+    		<div id="sellPerCirc" class="perCirc">
+                <div class="perCircInner">
+                    <div class="perCircStat">0%</div><div>Match</div>
+                </div>
             </div>
-        </div>
-        <br>
-        <center>
+            <br>
+            
         	<a href="/candidates/resume/{{ $candidate->id }}" 
         		role="button" 
         		class="btn btn-xs btn-success" 
-        		title="Download the Resume" 
-        		target="_blank">Resume/CV</a>
+        		target="_blank">Download Resume/CV</a>
         </center>
         
         <style>
@@ -101,6 +100,30 @@
 	</div>
 </div>
 <hr>
+
+@if (count($comments))
+<div class="row">
+	<div class="col-md-12">
+		<h3>Comments</h3>
+		<div class="row">
+			<div class="col-md-12">
+				<ul class="list-group">
+                	@foreach ($comments as $comment)
+                		<li class="list-group-item">
+                    		{{ $comment->comment }} 
+                    		<br>
+                    		<em style="color: #888;">- Commented by {{ $comment->username }}, {{ $comment->created_at->diffForHumans() }}</em>
+                		</li>
+                	@endforeach
+                </ul>
+			</div>
+		</div>
+	</div>
+</div>
+@endif
+
+
+@if (count($answers))
 <div class="row">
 	<div class="col-md-12">
 		<h3>Question & Answers</h3>
@@ -146,9 +169,5 @@
     	@endif
 	</div>
 </div>
+@endif
  
-
-<center>
-	
-	
-</center>

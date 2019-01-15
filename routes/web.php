@@ -34,7 +34,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/candidates/comments/{cid}', 'CandidatesController@comments')->name('candidates.comments');
     Route::post('/candidates/comment', 'CandidatesController@comment')->name('candidates.comment');
     Route::get('/candidates/preview/{cid}', 'CandidatesController@preview')->name('candidates.preview');
-    Route::get('/candidates/resume/{cid}', 'CandidatesController@resume')->name('candidates.resume');
+    Route::get('/candidates/resume/{cid}', 'CandidatesController@load')->name('candidates.resume');
     
 });
 
