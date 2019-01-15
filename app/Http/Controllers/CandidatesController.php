@@ -35,6 +35,10 @@ class CandidatesController extends Controller
             $job = Job::find($request->jid);
         }
         
+        if (!empty($request->s)) {
+            $results->where('name', 'like', '%' . $request->s . '%');
+        }
+        
         $candidates = $results->paginate(20);
         
         return view('candidates.index', [
