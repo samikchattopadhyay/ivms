@@ -98,17 +98,15 @@
         										action="{{ route('candidate.destroy', ['id' => $candidate->id]) }}" 
         										onsubmit="return confirm('Are you sure?')">
         									
-        										<!-- 
     											<a href="javascript: void(0)" 
             										role="button" 
-            										class="btn btn-default btn-xs comment"
+            										class="btn btn-default btn-xs preview"
             										data-index="{{ $candidate->id }}"
             										data-toggle="modal" 
             										data-target="#modal-preview"
             										title="Preview">
             										<i class="fa fa-eye"></i>
             									</a>
-            									-->
             									
         										<a href="javascript: void(0)" 
             										role="button" 
@@ -225,6 +223,23 @@
 </div>
 <!-- /.modal -->
 
+<div class="modal fade" id="modal-preview">
+	<div class="modal-dialog" style="width: 70%; min-width: 400px;">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<div class="col-md-12" id="preview-area"></div>
+			</div>
+		</div>
+		<!-- /.modal-content -->
+	</div>
+	<!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
 <script>
 $(document).ready(function() {
 
@@ -244,6 +259,14 @@ $(document).ready(function() {
 				$('#comment-text').val('');
 				$('#modal-comment').modal('toggle');
 			}
+		});
+	});
+
+	$('.preview').on('click', function(e) {
+		e.preventDefault();
+		var cId = $(this).data('index');
+		$.get('/candidates/preview/' + cId, function(comments) {
+			$('#preview-area').html(comments);
 		});
 	});
 	

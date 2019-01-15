@@ -237,6 +237,29 @@ class CandidatesController extends Controller
         ]);
     }
     
+    public function preview($cid) {
+        
+        $candidate = Candidate::where('candidates.id', $cid)
+        ->leftJoin('jobs', 'jobs.id', '=', 'candidates.job_id')
+        ->select(['candidates.*', 'jobs.position'])
+        ->first();
+        
+        $candidate->cv_text = Storage::get('cv/txt/' . $cid . '.txt');
+        $study = $this->studyTheCv($candidate->cv_text, $candidate->job_id);
+        
+        $qgroups = Job::find($candidate->job_id)
+        ->select('qgroups')
+        ->first();
+        
+        $questions = $this->studyTheCvAndGetQuestions($candidate->cv_text, $candidate->job_id);
+        
+        return view('candidates.preview', [
+            'candidate' => $candidate,
+            'questions' => $questions,
+            'keywords' => isset($study['found']) ? explode(',', $study['found']) : array()
+        ]);
+    }
+    
     private function studyTheCv($cvText, $jobId) 
     {
         $cvText = trim($cvText);
@@ -281,7 +304,7 @@ class CandidatesController extends Controller
         
         return array(
             'found' => implode(',', $found),
-            'match' => $match
+            'match' => $match,
         );
     }
 
