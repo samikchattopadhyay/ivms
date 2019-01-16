@@ -57,7 +57,7 @@
 								<th>Job Position</th>
 								<th>Location</th>
 								<th>Match %</th>
-								<th width="170">Actions</th>
+								<th width="150">Actions</th>
 							</tr>
 							
 							@if (isset($candidates) && count($candidates))
@@ -116,13 +116,6 @@
             										data-target="#modal-comment"
             										title="Comment / Note">
             										<i class="fa fa-comment"></i>
-            									</a>
-            									
-        										<a href="{{ route('candidates.qset', ['id' => $candidate->id]) }}" 
-            										role="button" 
-            										class="btn btn-default btn-xs"
-            										title="Question Set">
-            										<i class="fa fa-question"></i>
             									</a>
             									
             									<a href="{{ route('candidates.recalculate', ['id' => $candidate->id]) }}" 
