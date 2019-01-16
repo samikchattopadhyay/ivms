@@ -29,7 +29,9 @@ class CandidatesController extends Controller
         // Candidate::paginate(10)
         $results = DB::table('candidates')
         ->leftJoin('jobs', 'candidates.job_id', '=', 'jobs.id')
-        ->select('candidates.*', 'jobs.position as job_position')
+        ->leftJoin('candidate_comments as cc', 'cc.cid', '=', 'candidates.id' )
+        ->select('candidates.*', DB::raw('count(cc.id) as comments'), 'jobs.position as job_position')
+        ->groupBy('candidates.id')
         ->orderBy('candidates.id', 'desc');
         
         if (!empty($request->jid)) {

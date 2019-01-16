@@ -94,6 +94,11 @@
         								
         								</td>
         								<td>
+        									<style>
+        									a.faded {
+        									   color: #BBB !important;
+        									}
+        									</style>
         									<form method="POST"
         										action="{{ route('candidate.destroy', ['id' => $candidate->id]) }}" 
         										onsubmit="return confirm('Are you sure?')">
@@ -110,7 +115,7 @@
             									
         										<a href="javascript: void(0)" 
             										role="button" 
-            										class="btn btn-default btn-xs comment"
+            										class="btn btn-default btn-xs comment {{ ($candidate->comments) > 0 ? "" : "faded" }}"
             										data-index="{{ $candidate->id }}"
             										data-toggle="modal" 
             										data-target="#modal-comment"
