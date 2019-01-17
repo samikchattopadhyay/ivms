@@ -14,6 +14,8 @@ use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use App\Option;
 use App\CandidateComment;
 use Illuminate\Support\Facades\Auth;
+use App\Mail\SendEmail;
+use Illuminate\Support\Facades\Mail;
 
 class CandidatesController extends Controller
 {
@@ -290,6 +292,15 @@ class CandidatesController extends Controller
         if (file_exists($path)) {
             return Response::download($path);
         }
+    }
+    
+    public function testEmail()
+    {
+        $data = [
+            'subject' => 'Testing email',
+            'message' => 'Hello this is another test email'
+        ];
+        Mail::to('samikchattopadhyay@gmail.com')->send(new SendEmail($data));
     }
     
     private function studyTheCv($cvText, $jobId) 

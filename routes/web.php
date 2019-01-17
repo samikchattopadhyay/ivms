@@ -39,6 +39,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/candidates/preview/{cid}', 'CandidatesController@preview')->name('candidates.preview');
     Route::get('/candidates/resume/{cid}', 'CandidatesController@load')->name('candidates.resume');
     
+    Route::get('/candidates/test-email', 'CandidatesController@testEmail');
+    
 });
 
 
