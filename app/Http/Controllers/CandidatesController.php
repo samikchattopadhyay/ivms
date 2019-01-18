@@ -26,7 +26,7 @@ class CandidatesController extends Controller
      */
     public function index(Request $request)
     {
-        $rpp = 15;
+        $rpp = 25;
         
         // Candidate::paginate(10)
         $results = DB::table('candidates')
