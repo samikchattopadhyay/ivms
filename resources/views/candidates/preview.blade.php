@@ -1,6 +1,6 @@
 <div class="row">
 	<div class="col-md-2">
-		<img src="https://www.qualiscare.com/wp-content/uploads/2017/08/default-user-300x300.png" style="height: 130px;">
+		<img src="{{ Avatar::create($candidate->name)->toBase64() }}" style="height: 130px;">
 	</div>
 	<div class="col-md-8">
 		<h2>{{ $candidate->name }}</h2>
@@ -28,10 +28,23 @@
             </div>
             <br>
             
-        	<a href="/candidates/resume/{{ $candidate->id }}" 
+        	<a href="{{ route('candidates.resume', ['cid' => $candidate->id]) }}" 
         		role="button" 
         		class="btn btn-xs btn-success" 
-        		target="_blank">Download Resume/CV</a>
+                target="_blank"
+                title="Download Resume/CV">Download</a>
+                
+            @if (empty($candidate->qsent))
+            <a href="{{ route('candidates.email', ['cid' => $candidate->id]) }}" 
+        		role="button" 
+        		class="btn btn-xs btn-success"
+        		title="Email question set">Email</a>
+    		@else
+    		<a href="#" 
+        		role="button" 
+        		class="btn btn-xs btn-default disabled">Sent</a>
+    		@endif
+    		
         </center>
         
         <style>
@@ -112,7 +125,7 @@
                 		<li class="list-group-item">
                     		{{ $comment->comment }} 
                     		<br>
-                    		<em style="color: #888;">- Commented by {{ $comment->username }}, {{ $comment->created_at->diffForHumans() }}</em>
+                    		<em style="color: #888;">- Commented by {{ empty($comment->username) ? 'System' : $comment->username }}, {{ $comment->created_at->diffForHumans() }}</em>
                 		</li>
                 	@endforeach
                 </ul>
@@ -127,43 +140,42 @@
 <div class="row">
 	<div class="col-md-12">
 		<h3>Question & Answers</h3>
+		<hr>
 		@if (isset($questions) && count($questions))
     		@foreach ($questions as $question)
+    			<?php //dump($answers[$question->id]) ?>
     			<div class="row">
-    				<div class="col-md-12">
-    					<div class="form-group">
-    						<label for="qid-{{ $question->id }}">{{ $question->question }}</label>
-    						@if ($question->type == 'Text')
-    							<textarea id="qid-{{ $question->id }}" 
-    								name="qid-{{ $question->id }}" 
-    								class="form-control"
-    								required></textarea>
-    						@elseif ($question->type == 'Select')
-    							<select id="qid-{{ $question->id }}" 
-    								name="qid-{{ $question->id }}" 
-    								class="form-control"
-    								required>
+    				<div class="form-group">
+						<div class="col-md-12">
+							<label for="qid-{{ $question->id }}">{{ $question->question }}</label>
+						</div>
+						
+						@if ($question->type == 'Text')
+							<div class="col-md-12">
+								<p style="border: 1px #AAA solid; background-color: #EFEFEF; padding: 10px;">{{ $answers[$question->id] }}</p>
+							</div>
+						@elseif ($question->type == 'Select')
+							<div class="col-md-12">
+								<select class="form-control" disabled>
         							@if (!empty($question->options))
         								@foreach ($question->options as $option)
-        								<option value="{{ $option->id }}">{{ $option->label }}</option>
+        								<option value="{{ $option->id }}" {{ $answers[$question->id] == $option->id ? 'selected' : '' }}>{{ $option->label }}</option>
         								@endforeach
         							@endif
     							</select>
-    						@else
-    							@if (!empty($question->options))
-    								@foreach ($question->options as $option)
-    									<div class="checkbox">
-                                            <label>
-                                              	<input type="checkbox"
-                    								name="qid-{{ $question->id }}[]" 
-                    								value="{{ $option->id }}"> {{ $option->label }}
-                                            </label>
-                                        </div>
-    								@endforeach
-    							@endif
-    						@endif
-    					</div>
-    				</div>
+							</div>
+						@else
+							@if (!empty($question->options))
+								@foreach ($question->options as $option)
+									<div class="checkbox col-md-4">
+                                        <label>
+                                          	<input type="checkbox" value="{{ $option->id }}" {{ in_array($option->id, $answers[$question->id]) ? 'checked' : '' }} disabled> {{ $option->label }}
+                                        </label>
+                                    </div>
+								@endforeach
+							@endif
+						@endif
+					</div>
     			</div>
     		@endforeach
     	@endif

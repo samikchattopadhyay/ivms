@@ -39,10 +39,12 @@ class SendEmail extends Mailable
             $address = $this->data['address'];
         }
         
-        return $this->view('emails.default')
+        $template = isset($this->data['template']) ? $this->data['template'] : 'emails.default';
+        
+        return $this->view($template)
         ->from($address['email'], $address['name'])
         ->replyTo($address['email'], $address['name'])
         ->subject($this->data['subject'])
-        ->with([ 'body' => $this->data['message'] ]);
+        ->with($this->data);
     }
 }

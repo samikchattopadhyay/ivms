@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Candidate;
 use App\Job;
 use App\Question;
+use App\QuestionAnswer;
 use File;
 use Response;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
@@ -204,6 +205,12 @@ class CandidatesController extends Controller
         return redirect()->intended('/candidate');
     }
 
+    /**
+     * Recalculate match percent after CV gets updated
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function recalc(Request $request) 
     {
         $candidate = Candidate::findOrFail($request->id);
@@ -218,18 +225,12 @@ class CandidatesController extends Controller
         return redirect()->intended('/candidate');
     }
 
-    public function qset(Request $request)
-    {
-        $candidate = Candidate::findOrFail($request->id);
-        $candidate->cv_text = Storage::get('cv/txt/' . $request->id . '.txt');
-        $questions = $this->studyTheCvAndGetQuestions($candidate->cv_text, $candidate->job_id);
-        
-        return view('candidates.qset', [
-            'questions' => $questions
-        ]);
-        
-    }
-
+    /**
+     * List of comments given to a candidate
+     * 
+     * @param integer $cid
+     * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory
+     */
     public function comments($cid) {
         return view('candidates.comments', [
             'comments' => CandidateComment::where('cid', $cid)
@@ -239,6 +240,12 @@ class CandidatesController extends Controller
         ]);
     }
     
+    /**
+     * Save a new comment given to a candidate
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function comment(Request $request) 
     {
         return response()->json([
@@ -250,8 +257,14 @@ class CandidatesController extends Controller
         ]);
     }
     
-    public function preview($cid) {
-        
+    /**
+     * Preview of the candiate details
+     * 
+     * @param integer $cid
+     * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory
+     */
+    public function preview($cid) 
+    {
         $candidate = Candidate::where('candidates.id', $cid)
         ->leftJoin('jobs', 'jobs.id', '=', 'candidates.job_id')
         ->select(['candidates.*', 'jobs.position'])
@@ -259,29 +272,39 @@ class CandidatesController extends Controller
         
         $candidate->cv_text = Storage::get('cv/txt/' . $cid . '.txt');
         $study = $this->studyTheCv($candidate->cv_text, $candidate->job_id);
-        
-        $qgroups = Job::find($candidate->job_id)
-        ->select('qgroups')
-        ->first();
-        
         $questions = $this->studyTheCvAndGetQuestions($candidate->cv_text, $candidate->job_id);
         
         $comments = CandidateComment::where('cid', $cid)
         ->leftJoin('users', 'users.id', '=', 'candidate_comments.uid')
         ->select(['candidate_comments.*', 'users.name as username'])
+        ->orderBy('id', 'desc')
         ->get();
+        
+        $qanda = QuestionAnswer::where('cid', $candidate->id)
+        ->leftJoin('questions', 'questions.id', '=', 'question_answers.qid')
+        ->select('questions.*', 'question_answers.*')
+        ->get();
+        
+        $answers = array();
+        foreach ($qanda as $answer) {
+            if ($answer->type != 'Text') {
+                $answers[$answer->qid] = explode(',', $answer->answer);
+            } else {
+                $answers[$answer->qid] = $answer->answer;
+            }
+        }
         
         return view('candidates.preview', [
             'candidate' => $candidate,
             'questions' => $questions,
-            'answers' => array(),
+            'answers' => $answers,
             'comments' => $comments,
             'keywords' => isset($study['found']) ? explode(',', $study['found']) : array()
         ]);
     }
     
     /**
-     * Load resume/cv resource.
+     * Download resume/cv resource.
      *
      * @param  string  $name
      * @return \Illuminate\Http\Response
@@ -294,6 +317,140 @@ class CandidatesController extends Controller
         }
     }
     
+    /**
+     * Send email to candidate having a
+     * unique session of the question set
+     * prepared for him
+     *
+     * @param integer $cid
+     */
+    public function emailQset($cid)
+    {
+        // Get candidate email
+        $candidate = Candidate::findOrFail($cid);
+        
+        // Generate a unique session ID
+        $uqSessId = md5(uniqid(rand(), true)) . md5($cid) . md5(uniqid(rand(), true));
+        
+        // Prepare the Unique session URL
+        $qsetUrl = route('candidates.qset', [
+            'session' => $uqSessId
+        ]);
+        
+        // Comment - Question set has been emailed
+        CandidateComment::create([
+            'cid' => $cid,
+            'uid' => Auth::user()->id,
+            'comment' => 'Question set has been emailed'
+        ]);
+        
+        // Set unique session ID for that candidate in database
+        // and mark as qset sent
+        Candidate::where('id', $cid)
+        ->update([
+            'uqsessid' => $uqSessId,
+            'qsent' => 1
+        ]);
+        
+        // Send email
+        try {
+            Mail::to($candidate->email)
+            ->send(new SendEmail([
+                'subject' => 'CV shortlisted - Please submit further details',
+                'template' => 'emails.qset',
+                'url' => $qsetUrl,
+                'candidate' => $candidate,
+                'job' => Job::find($candidate->job_id),
+                'header_img' => env('MAIL_HEADER_IMAGE', '/eamil-header.png'),
+                'company_name' => env('COMPANY_NAME', 'Your company name'),
+            ]));
+        } catch(\Exception $e) {
+            
+        }
+        
+        return redirect()->intended('/candidate');
+    }
+    
+    /**
+     * Public link to access list of questions
+     * for a candidate. He will submit the form
+     * after he gives answers to the questions
+     *
+     * @param Request $request
+     * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory|string
+     */
+    public function qset($sessionId) 
+    {
+        $candidate = Candidate::where('candidates.uqsessid', $sessionId)
+        ->leftJoin('jobs', 'jobs.id', '=', 'candidates.job_id')
+        ->select(['candidates.*', 'jobs.*'])
+        ->firstOrFail();
+        
+        $candidate->cv_text = Storage::get('cv/txt/' . $candidate->id . '.txt');
+        $study = $this->studyTheCv($candidate->cv_text, $candidate->job_id);
+        $questions = Question::whereIn('gid', explode(',', $candidate->qgroups))->get();
+        foreach ($questions as $key => $question) {
+            $questions[$key]->options = Option::where('qid', $question->id)->get();
+        }
+        
+        return view('candidates.qset', [
+            'session' => $sessionId,
+            'questions' => $questions,
+            'candidate' => $candidate,
+            'keywords' => isset($study['found']) ? explode(',', $study['found']) : array()
+        ]);
+    }
+    
+    /**
+     * This is another public resource
+     * to store candidate Answers submitted by the qset form
+     *
+     * @param Request $request
+     * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory
+     */
+    public function qsetAnswer(Request $request) 
+    {
+        $answers = [];
+        
+        // Get candidate details
+        $candidate = Candidate::where('uqsessid', $request->session)->firstOrFail();
+        
+        // Destroy the Q & A session
+        //Candidate::where('id', $candidate->id)
+        //    ->update(['uqsessid' => NULL]);
+        
+        // Prepare answers
+        foreach ($request->qid as $qid => $answer) {
+            
+            if (is_array($answer)) {
+                $answer = implode(',', $answer);
+            }
+            
+            $answers[] = array(
+                'qid' => $qid,
+                'cid' => $candidate->id,
+                'answer' => $answer
+            );
+        }
+        
+        // Save the answers
+        QuestionAnswer::insert($answers);
+        
+        // Comment - Answers submitted by the candidate
+        CandidateComment::create([
+            'cid' => $candidate->id,
+            'uid' => 0,
+            'comment' => 'Answers submitted by the candidate'
+        ]);
+        
+        return view('candidates.answer', [
+            'name' => $candidate->name,
+        ]);
+    }
+    
+    /**
+     * Email test service
+     */
     public function testEmail()
     {
         $data = [
@@ -302,6 +459,7 @@ class CandidatesController extends Controller
         ];
         Mail::to('samikchattopadhyay@gmail.com')->send(new SendEmail($data));
     }
+    
     
     private function studyTheCv($cvText, $jobId) 
     {
@@ -409,4 +567,5 @@ class CandidatesController extends Controller
         }
         return $options;
     }
+
 }

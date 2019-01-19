@@ -32,15 +32,17 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/options/destroy','QuestionsController@destroyOption');
     
     Route::get('/candidates/recalc', 'CandidatesController@recalc')->name('candidates.recalculate');
-    Route::get('/candidates/qset', 'CandidatesController@qset')->name('candidates.qset');
     Route::get('/candidates/answer', 'CandidatesController@answer')->name('candidates.answer');
     Route::get('/candidates/comments/{cid}', 'CandidatesController@comments')->name('candidates.comments');
     Route::post('/candidates/comment', 'CandidatesController@comment')->name('candidates.comment');
     Route::get('/candidates/preview/{cid}', 'CandidatesController@preview')->name('candidates.preview');
-    Route::get('/candidates/resume/{cid}', 'CandidatesController@load')->name('candidates.resume');
-    
+    Route::get('/candidates/download-cv/{cid}', 'CandidatesController@load')->name('candidates.resume');
+    Route::get('/candidates/email-qset/{cid}', 'CandidatesController@emailQset')->name('candidates.email');
     Route::get('/candidates/test-email', 'CandidatesController@testEmail');
     
 });
+
+Route::get('/qset/{session}', 'CandidatesController@qset')->name('candidates.qset');
+Route::post('/qset/answer', 'CandidatesController@qsetAnswer')->name('candidates.answer');
 
 

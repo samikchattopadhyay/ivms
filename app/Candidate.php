@@ -15,6 +15,6 @@ class Candidate extends Model
         'name', 'email', 'location', 'source', 
         'job_id', 'notice_period', 'cv_file',
         'keywords', 'cv_keywords', 'cv_text',
-        'cv_match_percent'
+        'cv_match_percent', 'qsent'
     ];
 }
