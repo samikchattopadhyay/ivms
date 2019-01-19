@@ -82,7 +82,7 @@ class CandidatesController extends Controller
             'name' => 'required|max:100',
             'email' => 'required|email|max:255|unique:candidates',
             'job_id' => 'required',
-            'notice_period' => 'required',
+            'mobile' => 'required',
             'cv_file' => 'required|max:10000|mimes:doc,docx,pdf',
             'cv_text' => 'required',
         ]);
@@ -98,7 +98,7 @@ class CandidatesController extends Controller
             'location' => $request['location'],
             'source' => $request['source'],
             'notice_period' => $request['notice_period'],
-            'keywords' => $request['keywords'],
+            'mobile' => $request['mobile'],
             'cv_file' => $request->file('cv_file')->store('cv'),
             'cv_keywords' => isset($study['found']) ? $study['found'] : '',
             'cv_match_percent' => isset($study['match']) ? $study['match'] : 0,
@@ -163,7 +163,7 @@ class CandidatesController extends Controller
         $constraints = [
             'name' => 'required|max:100',
             'job_id' => 'required',
-            'notice_period' => 'required',
+            'mobile' => 'required',
             'cv_file' => 'max:10000|mimes:doc,docx,pdf',
         ];
         
@@ -176,7 +176,7 @@ class CandidatesController extends Controller
             'location' => $request['location'],
             'source' => $request['source'],
             'notice_period' => $request['notice_period'],
-            'keywords' => $request['keywords'],
+            'mobile' => $request['mobile'],
             'cv_keywords' => isset($study['found']) ? $study['found'] : '',
             'cv_match_percent' => isset($study['match']) ? $study['match'] : 0,
         ];
