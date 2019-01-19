@@ -242,7 +242,11 @@
 		<!-- Left side column. contains the logo and sidebar -->
 		@include('layouts.aside')
 
-		@yield('content')
+		<!-- Content Wrapper. Contains page content -->
+		<div class="content-wrapper">
+			@yield('content')
+		</div>
+		<!-- /.content-wrapper -->
 		
 		<footer class="main-footer">
 			<div class="pull-right hidden-xs">

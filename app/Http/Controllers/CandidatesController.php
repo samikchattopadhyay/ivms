@@ -17,6 +17,7 @@ use App\CandidateComment;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\SendEmail;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Input;
 
 class CandidatesController extends Controller
 {
@@ -248,12 +249,30 @@ class CandidatesController extends Controller
      */
     public function comment(Request $request) 
     {
+        $id = CandidateComment::create([
+            'comment' => $request['comment'],
+            'cid' => $request['candidate'],
+            'uid' => Auth::user()->id
+        ])->id;
+        
+        $created = $username = '';
+        
+        if ($id) {
+            
+            $comment = CandidateComment::where('candidate_comments.id', $id)
+            ->leftJoin('users', 'users.id', '=', 'candidate_comments.uid')
+            ->select(['candidate_comments.*', 'users.name as username'])
+            ->first();
+            
+            $created = $comment->created_at->diffForHumans();
+            $username = $comment->username;
+        }
+        
         return response()->json([
-            'success' => CandidateComment::create([
-                'comment' => $request['comment'],
-                'cid' => $request['candidate'],
-                'uid' => Auth::user()->id
-            ])
+            'success' => !empty($id),
+            'comment' => $request['comment'],
+            'created' => $created,
+            'username' => $username
         ]);
     }
     
@@ -263,7 +282,7 @@ class CandidatesController extends Controller
      * @param integer $cid
      * @return \Illuminate\View\View|\Illuminate\Contracts\View\Factory
      */
-    public function preview($cid) 
+    public function preview($cid, $ex = false) 
     {
         $candidate = Candidate::where('candidates.id', $cid)
         ->leftJoin('jobs', 'jobs.id', '=', 'candidates.job_id')
@@ -295,6 +314,7 @@ class CandidatesController extends Controller
         }
         
         return view('candidates.preview', [
+            'layout' => empty($ex),
             'candidate' => $candidate,
             'questions' => $questions,
             'answers' => $answers,

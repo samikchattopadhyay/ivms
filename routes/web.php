@@ -36,6 +36,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/candidates/comments/{cid}', 'CandidatesController@comments')->name('candidates.comments');
     Route::post('/candidates/comment', 'CandidatesController@comment')->name('candidates.comment');
     Route::get('/candidates/preview/{cid}', 'CandidatesController@preview')->name('candidates.preview');
+    Route::get('/candidates/preview/{cid}/{ex}', 'CandidatesController@preview')->name('candidates.expreview');
+    
     Route::get('/candidates/download-cv/{cid}', 'CandidatesController@load')->name('candidates.resume');
     Route::get('/candidates/email-qset/{cid}', 'CandidatesController@emailQset')->name('candidates.email');
     Route::get('/candidates/test-email', 'CandidatesController@testEmail');
