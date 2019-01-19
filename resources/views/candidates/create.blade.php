@@ -124,27 +124,31 @@
                         </div>
 						<!-- /.form-group -->
 						
-						<div class="form-group{{ $errors->has('notice_period') ? ' has-error' : '' }}">
-                            <label for="notice_period">Notice Period <em style="color: #AAA;">(in days)</em></label>
-                            <input id="notice_period" type="text" class="form-control" name="notice_period"
-                                value="{{ empty(old('notice_period', '')) ? (isset($candidate->notice_period) ? $candidate->notice_period : '') : old('notice_period') }}"> 
-                            @if ($errors->has('notice_period')) 
+						<div class="form-group{{ $errors->has('mobile') ? ' has-error' : '' }}">
+                            <label for="mobile">Mobile <em style="color: #AAA;">(Comma separate for multiple)</em></label>
+                            <input id="mobile" 
+                            	type="text" class="form-control" 
+                            	name="mobile"
+                            	required
+                                value="{{ empty(old('mobile', '')) ? (isset($candidate->mobile) ? $candidate->mobile : '') : old('mobile') }}"> 
+                            @if ($errors->has('mobile')) 
                             	<span class="help-block"> 
-                            		<strong>{{ $errors->first('notice_period') }}</strong>
+                            		<strong>{{ $errors->first('mobile') }}</strong>
                                 </span> 
                             @endif
                         </div>
 						<!-- /.form-group -->
 						
-						<div class="form-group{{ $errors->has('keywords') ? ' has-error' : '' }}">
-                            <label for="keywords">Keywords <em style="color: #AAA;">(Any known words for this candidate)</em></label>
-                            <input id="keywords" 
-                            	type="text" class="form-control" 
-                            	name="keywords"
-                                value="{{ empty(old('keywords', '')) ? (isset($candidate->keywords) ? $candidate->keywords : '') : old('keywords') }}"> 
-                            @if ($errors->has('keywords')) 
+						<div class="form-group{{ $errors->has('notice_period') ? ' has-error' : '' }}">
+                            <label for="notice_period">Notice Period <em style="color: #AAA;">(in days)</em></label>
+                            <input id="notice_period" 
+                            	type="text" 
+                            	class="form-control" 
+                            	name="notice_period"
+                                value="{{ empty(old('notice_period', '')) ? (isset($candidate->notice_period) ? $candidate->notice_period : '') : old('notice_period') }}"> 
+                            @if ($errors->has('notice_period')) 
                             	<span class="help-block"> 
-                            		<strong>{{ $errors->first('keywords') }}</strong>
+                            		<strong>{{ $errors->first('notice_period') }}</strong>
                                 </span> 
                             @endif
                         </div>
