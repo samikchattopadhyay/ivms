@@ -415,7 +415,7 @@ class CandidatesController extends Controller
             'session' => $sessionId,
             'questions' => $questions,
             'candidate' => $candidate,
-            'keywords' => $candidate->cv_keywords
+            'keywords' => explode(',', $candidate->cv_keywords)
         ]);
     }
     
