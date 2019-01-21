@@ -16,11 +16,8 @@
 
 <!-- Main content -->
 <section class="content">
-
 	<div class="{{ $layout == false ? 'box' : '' }} box-default">
-	
 		<div class="box-body">
-	
             <div class="row">
             	<div class="col-md-2">
             		<img src="{{ Avatar::create($candidate->name)->toBase64() }}" style="height: 130px;">
@@ -41,7 +38,29 @@
                         	<span class="label label-default">{{ $keyword }}</span>
                         @endforeach
                     </p>
-            	</div>
+                    
+					<div class="input-group">
+						<div id="status-group" class="btn-group">
+							<button type="button" class="btn btn-default">Status - <b id="candistat">{{ $statusList[$candidate->status] }}</b></button>
+							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+								<span class="caret"></span> 
+								<span class="sr-only">Select Status</span>
+							</button>
+							<ul class="dropdown-menu" role="menu">
+								<li><a href="REJ">Rejected</a></li>
+								<li><a href="SLT">Shortlisted</a></li>
+								<li class="divider"></li>
+								<li><a href="WTG">Waiting</a></li>
+								<li><a href="SEL">Selected</a></li>
+								<li><a href="NEG">Negotiate</a></li>
+								<li class="divider"></li>
+								<li><a href="CNF">Confirmed</a></li>
+								<li><a href="JND">Joined</a></li>
+							</ul>
+						</div>
+					</div>
+
+				</div>
             	<div class="col-md-2">
             		<center>
                 		<div id="sellPerCirc" class="perCirc">
@@ -160,6 +179,7 @@
             
             @if ($layout == false)
                 <!-- Give a comment -->
+                <br>
                 <form id="comment-form" action="/candidates/comment" method="post">
                 	{{ csrf_field() }} 
                 	<input type="hidden" name="candidate" value="{{ $candidate->id }}" />
@@ -205,11 +225,10 @@
             @if (count($answers))
             <div class="row">
             	<div class="col-md-12">
-            		<h3>Question & Answers</h3>
+            		<h3>Question &amp; Answers</h3>
             		<hr>
             		@if (isset($questions) && count($questions))
                 		@foreach ($questions as $question)
-                			<?php //dump($answers[$question->id]) ?>
                 			<div class="row">
                 				<div class="form-group">
             						<div class="col-md-12">
@@ -248,9 +267,34 @@
             	</div>
             </div>
             @endif
-    
     	</div>
     </div>
 </section>
 <!-- /.content -->
+
+<script>
+
+$(document).ready(function() {
+
+	var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+
+	$('#status-group li a').on('click', function(e) {
+		
+		e.preventDefault();
+		var stat = $(this).attr('href');
+		var statName = $(this).text();
+		
+		$.post('/candidates/status', {
+			_token: CSRF_TOKEN,
+			cid: '{{ $candidate->id }}',
+			status: stat
+		}, function(response) {
+			if (response.success) {
+				$('#candistat').text(statName);
+			}
+		}, 'json');
+	});
+
+});
+</script>
 @endsection

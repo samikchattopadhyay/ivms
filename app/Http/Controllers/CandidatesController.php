@@ -53,7 +53,8 @@ class CandidatesController extends Controller
         
         return view('candidates.index', [
             'job' => isset($job) ? $job : '',
-            'candidates' => $candidates
+            'candidates' => $candidates,
+            'statusList' => Candidate::$statusList
         ]);
     }
 
@@ -319,8 +320,35 @@ class CandidatesController extends Controller
             'questions' => $questions,
             'answers' => $answers,
             'comments' => $comments,
+            'statusList' => Candidate::$statusList,
             'keywords' => isset($study['found']) ? explode(',', $study['found']) : array()
         ]);
+    }
+
+    public function status(Request $request) 
+    {
+        $res = false;
+        $cid = Input::get('cid', null);
+        $stat = Input::get('status', null);
+        
+        if ($cid && $stat) {
+            
+            $res = Candidate::findOrFail($cid)
+            ->update(['status' => $stat]);
+            
+            // Write a comment of this event for the candidate
+            if ($res) {
+                CandidateComment::create([
+                    'cid' => $cid,
+                    'uid' => Auth::user()->id,
+                    'comment' => Candidate::$statusComments[$stat]
+                ]);
+            }
+        }
+        
+        return response()->json([
+            'success' => $res
+        ]); 
     }
     
     /**
@@ -354,14 +382,7 @@ class CandidatesController extends Controller
         
         // Prepare the Unique session URL
         $qsetUrl = route('candidates.qset', [
-            'session' => $uqSessId
-        ]);
-        
-        // Comment - Question set has been emailed
-        CandidateComment::create([
-            'cid' => $cid,
-            'uid' => Auth::user()->id,
-            'comment' => 'Question set has been emailed'
+            'session' => $uqSessId,
         ]);
         
         // Set unique session ID for that candidate in database
@@ -369,7 +390,15 @@ class CandidatesController extends Controller
         Candidate::where('id', $cid)
         ->update([
             'uqsessid' => $uqSessId,
+            'status' => 'QNA',
             'qsent' => 1
+        ]);
+        
+        // Comment - Question set has been emailed
+        CandidateComment::create([
+            'cid' => $cid,
+            'uid' => Auth::user()->id,
+            'comment' => Candidate::$statusComments['QNA']
         ]);
         
         // Send email
@@ -384,9 +413,7 @@ class CandidatesController extends Controller
                 'header_img' => env('MAIL_HEADER_IMAGE', '/eamil-header.png'),
                 'company_name' => env('COMPANY_NAME', 'Your company name'),
             ]));
-        } catch(\Exception $e) {
-            
-        }
+        } catch(\Exception $e) {}
         
         return redirect()->intended('/candidate');
     }
@@ -415,7 +442,7 @@ class CandidatesController extends Controller
             'session' => $sessionId,
             'questions' => $questions,
             'candidate' => $candidate,
-            'keywords' => explode(',', $candidate->cv_keywords)
+            'keywords' => explode(',', $candidate->cv_keywords),
         ]);
     }
     
@@ -435,7 +462,10 @@ class CandidatesController extends Controller
         
         // Destroy the Q & A session
         Candidate::where('id', $candidate->id)
-            ->update(['uqsessid' => NULL]);
+        ->update([
+            'uqsessid' => NULL,
+            'status' => 'INV',
+        ]);
         
         // Prepare answers
         foreach ($request->qid as $qid => $answer) {
@@ -458,7 +488,7 @@ class CandidatesController extends Controller
         CandidateComment::create([
             'cid' => $candidate->id,
             'uid' => 0,
-            'comment' => 'Answers submitted by the candidate'
+            'comment' => 'Answers submitted by the candidate. ' . Candidate::$statusComments['INV']
         ]);
         
         return view('candidates.answer', [

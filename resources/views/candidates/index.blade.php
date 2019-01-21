@@ -48,9 +48,8 @@
 				
 					<table class="table table-hover">
 						<tr>
+							<th width="100">Status</th>
 							<th>Name</th>
-							<th>Source</th>
-							<th width="100">Notice Period</th>
 							<th>Job Position</th>
 							<th>Location</th>
 							<th>Match %</th>
@@ -62,9 +61,22 @@
 							@foreach ($candidates as $candidate)
 								
 								<tr>
+									<td>
+        								@if ($candidate->status == 'NEW')
+        								<span class="label label-default" style="display:block; width: 100px; text-align: center;">{{ $statusList[$candidate->status] }}</span>
+        								@elseif (in_array($candidate->status, ['REJ']))
+        								<span class="label label-danger" style="display:block; width: 100px; text-align: center;">{{ $statusList[$candidate->status] }}</span>
+        								@elseif (in_array($candidate->status, ['QNA']))
+        								<span class="label label-warning" style="display:block; width: 100px; text-align: center;">{{ $statusList[$candidate->status] }}</span>
+        								@elseif (in_array($candidate->status, ['SLT','INV','WTG','SEL']))
+        								<span class="label label-success" style="display:block; width: 100px; text-align: center;">{{ $statusList[$candidate->status] }}</span>
+        								@elseif (in_array($candidate->status, ['NEG','CNF','JND']))
+        								<span class="label label-primary" style="display:block; width: 100px; text-align: center;">{{ $statusList[$candidate->status] }}</span>
+        								@else
+        								<span class="label label-" style="display:block; width: 100px; text-align: center;">{{ $statusList[$candidate->status] }}</span>
+        								@endif
+    								</td>
     								<td>{{ $candidate->name }}</td>
-    								<td>{{ $candidate->source }}</td>
-    								<td>{{ $candidate->notice_period }} days</td>
     								<td>{{ $candidate->job_position }}</td>
     								<td>{{ $candidate->location }}</td>
     								<td>
@@ -88,7 +100,6 @@
                                                 <span class="sr-only">Resume/CV matches {{ $candidate->cv_match_percent }}% of the job description</span>
                                             </div>
                                         </div>
-    								
     								</td>
     								<td>
     									<style>
