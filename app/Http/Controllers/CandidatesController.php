@@ -411,7 +411,7 @@ class CandidatesController extends Controller
                 'candidate' => $candidate,
                 'job' => Job::find($candidate->job_id),
                 'header_img' => env('MAIL_HEADER_IMAGE', '/eamil-header.png'),
-                'company_name' => env('COMPANY_NAME', 'Your company name'),
+                'company_name' => env('COMPANY_NAME', 'Yourcompany Inc'),
             ]));
         } catch(\Exception $e) {}
         
