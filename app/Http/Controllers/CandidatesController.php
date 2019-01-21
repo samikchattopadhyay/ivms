@@ -436,8 +436,8 @@ class CandidatesController extends Controller
         $candidate = Candidate::where('uqsessid', $request->session)->firstOrFail();
         
         // Destroy the Q & A session
-        //Candidate::where('id', $candidate->id)
-        //    ->update(['uqsessid' => NULL]);
+        Candidate::where('id', $candidate->id)
+            ->update(['uqsessid' => NULL]);
         
         // Prepare answers
         foreach ($request->qid as $qid => $answer) {
