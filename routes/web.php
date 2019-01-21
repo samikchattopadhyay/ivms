@@ -35,6 +35,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/candidates/answer', 'CandidatesController@answer')->name('candidates.answer');
     Route::get('/candidates/comments/{cid}', 'CandidatesController@comments')->name('candidates.comments');
     Route::post('/candidates/comment', 'CandidatesController@comment')->name('candidates.comment');
+    Route::post('/candidates/status', 'CandidatesController@status')->name('candidates.status');
     Route::get('/candidates/preview/{cid}', 'CandidatesController@preview')->name('candidates.preview');
     Route::get('/candidates/preview/{cid}/{ex}', 'CandidatesController@preview')->name('candidates.expreview');
     
