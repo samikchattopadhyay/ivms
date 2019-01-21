@@ -408,6 +408,7 @@ class CandidatesController extends Controller
         
         $candidate->cv_text = Storage::get('cv/txt/' . $candidate->id . '.txt');
         $study = $this->studyTheCv($candidate->cv_text, $candidate->job_id);
+        dump($study);
         $questions = Question::whereIn('gid', explode(',', $candidate->qgroups))->get();
         foreach ($questions as $key => $question) {
             $questions[$key]->options = Option::where('qid', $question->id)->get();
