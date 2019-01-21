@@ -406,10 +406,6 @@ class CandidatesController extends Controller
         ->select(['candidates.*', 'jobs.*'])
         ->firstOrFail();
         
-        $candidate->cv_text = Storage::get('cv/txt/' . $candidate->id . '.txt');
-        dump($candidate);
-        $study = $this->studyTheCv($candidate->cv_text, $candidate->job_id);
-        dump($study);
         $questions = Question::whereIn('gid', explode(',', $candidate->qgroups))->get();
         foreach ($questions as $key => $question) {
             $questions[$key]->options = Option::where('qid', $question->id)->get();
@@ -419,7 +415,7 @@ class CandidatesController extends Controller
             'session' => $sessionId,
             'questions' => $questions,
             'candidate' => $candidate,
-            'keywords' => isset($study['found']) ? explode(',', $study['found']) : array()
+            'keywords' => $candidate->cv_keywords
         ]);
     }
     
