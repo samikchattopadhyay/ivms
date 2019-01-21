@@ -88,7 +88,6 @@
     		</p>
     		<p>
     			@php
-    				dump($keywords);
     				$keywords = array_unique($keywords);
     			@endphp
     			

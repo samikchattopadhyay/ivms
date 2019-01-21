@@ -407,6 +407,7 @@ class CandidatesController extends Controller
         ->firstOrFail();
         
         $candidate->cv_text = Storage::get('cv/txt/' . $candidate->id . '.txt');
+        dump($candidate);
         $study = $this->studyTheCv($candidate->cv_text, $candidate->job_id);
         dump($study);
         $questions = Question::whereIn('gid', explode(',', $candidate->qgroups))->get();
