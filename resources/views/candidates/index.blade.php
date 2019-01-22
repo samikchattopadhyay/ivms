@@ -21,20 +21,44 @@
 					<h3 class="box-title">List All {{ isset($job) && !empty($job) ? ' - ' . $job->position : '' }} ({{ $candidates->total() }})</h3>
 					<div class="box-tools">
 						
-						<form action="">
-							<div class="input-group input-group-sm" style="width: 250px;">
+						<form id="srch-frm" action="">
+							<div class="input-group input-group-sm" style="width: 450px;">
 								{{ csrf_field() }}
+								
 								<input type="text" 
 									name="s" 
-									class="form-control pull-right" 
+									class="form-control" 
 									placeholder="Search">
+									
+								<input type="hidden"
+									name="t" 
+									id="ht" />
+									
 								<div class="input-group-btn">
-									<button type="submit" class="btn btn-default">
+								
+									<button type="button" class="btn btn-default" id="f-candistat">Filter Status</button>
+        							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+        								<span class="caret"></span> 
+        								<span class="sr-only"> Status</span>
+        							</button>
+        							<ul id="f-status-group" class="dropdown-menu" role="menu">
+        								<li><a href="REJ">Rejected</a></li>
+        								<li><a href="SLT">Shortlisted</a></li>
+        								<li class="divider"></li>
+        								<li><a href="WTG">Waiting</a></li>
+        								<li><a href="SEL">Selected</a></li>
+        								<li><a href="NEG">Negotiate</a></li>
+        								<li class="divider"></li>
+        								<li><a href="CNF">Confirmed</a></li>
+        								<li><a href="JND">Joined</a></li>
+        							</ul>
+        							
+        							<button type="submit" class="btn btn-default">
 										<i class="fa fa-search"></i>
 									</button>
-									<a role="button" href="/candidate/create" class="btn btn-warning">
-										<i class="fa fa-plus"></i>
-										Add New
+        							
+        							<a role="button" href="/candidate/create" class="btn btn-warning">
+										<i class="fa fa-plus"></i> Add New
 									</a>
 								</div>
 							</div>
@@ -340,9 +364,16 @@ $(document).ready(function() {
 	$('#modal-preview').on('hidden.bs.modal', function () {
 		$('a#ex-preview').attr('href', '#');
 		$('#preview-area').html('<div class="row"><div class="col-md-12" style="text-align: center;"><div class="lds-ring"><div></div><div></div><div></div><div></div></div><h2>Loading...</h2></div></div>');
-	})
+	});
+
+	$('#f-status-group li a').on('click', function(e) {
+		e.preventDefault();
+		var stat = $(this).attr('href');
+		var statName = $(this).text();
+		$('#ht').val(stat);
+		$('#f-candistat').text(statName);
+	});
 	
 });
 </script>
-
 @endsection

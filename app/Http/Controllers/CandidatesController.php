@@ -49,6 +49,11 @@ class CandidatesController extends Controller
             $results->where('name', 'like', '%' . $request->s . '%');
         }
         
+        if (!empty($request->t)) {
+            $rpp = 1000;
+            $results->where('status', '=', $request->t);
+        }
+        
         $candidates = $results->paginate($rpp);
         
         return view('candidates.index', [
