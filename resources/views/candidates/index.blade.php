@@ -44,6 +44,7 @@
         							<ul id="f-status-group" class="dropdown-menu" role="menu">
         								<li><a href="REJ">Rejected</a></li>
         								<li><a href="SLT">Shortlisted</a></li>
+        								<li><a href="QNA">Q & A Pending</a></li>
         								<li class="divider"></li>
         								<li><a href="WTG">Waiting</a></li>
         								<li><a href="SEL">Selected</a></li>
