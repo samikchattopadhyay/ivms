@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\QuestionGroup;
 use App\Job;
+use App\User;
 
 class JobsController extends Controller
 {
@@ -39,6 +40,7 @@ class JobsController extends Controller
     {
         return view('jobs.create', [
             'job' => false,
+            'users' => User::get(),
             'qgroups' => QuestionGroup::all(),
             'action' => 'Add New'
         ]);
@@ -59,6 +61,8 @@ class JobsController extends Controller
             'responsibilities' => 'required', 
             'compensation' => 'required|numeric',
             'expiry_date' => 'required',
+            'interviewer_id' => 'required',
+            'hr_id' => 'required',
         ]);
         
         // Add the question
@@ -71,6 +75,8 @@ class JobsController extends Controller
             'compensation' => $request['compensation'],
             'qgroups' => implode(',', $request['qgroups']),
             'expiry_date' => $request['expiry_date'],
+            'interviewer_id' => $request['interviewer_id'],
+            'hr_id' => $request['hr_id'],
         ]);
         
         return redirect()->intended( route('job.index') );
@@ -104,6 +110,7 @@ class JobsController extends Controller
         
         return view('jobs.create', [
             'job' => $job,
+            'users' => User::get(),
             'qgroups' => QuestionGroup::all(),
             'action' => 'Edit'
         ]);
@@ -118,7 +125,7 @@ class JobsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $job = Job::findOrFail($id);
+        Job::findOrFail($id);
         
         $constraints = [
             'position' => 'required',
@@ -127,6 +134,8 @@ class JobsController extends Controller
             'responsibilities' => 'required',
             'compensation' => 'required|numeric',
             'expiry_date' => 'required',
+            'interviewer_id' => 'required',
+            'hr_id' => 'required',
         ];
         
         $input = [
@@ -138,6 +147,8 @@ class JobsController extends Controller
             'compensation' => $request['compensation'],
             'qgroups' => implode(',', $request['qgroups']),
             'expiry_date' => $request['expiry_date'],
+            'interviewer_id' => $request['interviewer_id'],
+            'hr_id' => $request['hr_id'],
         ];
         
         $this->validate($request, $constraints);

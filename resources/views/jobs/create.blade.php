@@ -83,6 +83,28 @@
                         </div>
 						<!-- /.form-group -->
 						
+						<div class="form-group{{ $errors->has('hr_id') ? ' has-error' : '' }}">
+                            <label for="hr_id">HR Manager</label>
+                            @php
+                            $hrid = empty(old('hr_id', '')) ? (isset($job->hr_id) ? $job->hr_id : '') : old('hr_id');
+                            @endphp
+                            <select id="hr_id"
+                            	class="form-control" 
+                            	name="hr_id"
+                                required>
+                                <option value=""></option>
+                                @foreach ($users as $user)
+                                <option value="{{ $user->id}}" {{ $user->id == $hrid ? 'selected' : ''}}>{{ $user->name }}</option>
+                                @endforeach
+                            </select>
+                            @if ($errors->has('hr_id')) 
+                            	<span class="help-block"> 
+                            		<strong>{{ $errors->first('hr_id') }}</strong>
+                                </span> 
+                            @endif
+                        </div>
+						<!-- /.form-group -->
+						
 					</div>
 					<!-- /.col -->
 					
@@ -115,6 +137,28 @@
                             @if ($errors->has('compensation')) 
                             	<span class="help-block"> 
                             		<strong>{{ $errors->first('compensation') }}</strong>
+                                </span> 
+                            @endif
+                        </div>
+						<!-- /.form-group -->
+						
+						<div class="form-group{{ $errors->has('interviewer_id') ? ' has-error' : '' }}">
+                            <label for="interviewer_id">Interviewer</label>
+                            @php
+                            $ivid = empty(old('interviewer_id', '')) ? (isset($job->interviewer_id) ? $job->interviewer_id : '') : old('interviewer_id');
+                            @endphp
+                            <select id="interviewer_id"
+                            	class="form-control" 
+                            	name="interviewer_id"
+                                required>
+                                <option value=""></option>
+                                @foreach ($users as $user)
+                                <option value="{{ $user->id}}" {{ $user->id == $ivid ? 'selected' : ''}}>{{ $user->name }}</option>
+                                @endforeach
+                            </select>
+                            @if ($errors->has('interviewer_id')) 
+                            	<span class="help-block"> 
+                            		<strong>{{ $errors->first('interviewer_id') }}</strong>
                                 </span> 
                             @endif
                         </div>

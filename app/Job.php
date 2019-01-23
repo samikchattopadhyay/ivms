@@ -15,6 +15,7 @@ class Job extends Model
         'id', 'position', 'description', 
         'responsibilities', 'compensation', 
         'vacancies', 'location', 'qgroups',
-        'expiry_date'
+        'expiry_date', 'interviewer_id', 
+        'hr_id'
     ];
 }
