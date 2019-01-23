@@ -39,58 +39,59 @@
                         @endforeach
                     </p>
                     
-                    <hr>
-                    
-                    <div class="row">
-                    	<div class="col-md-4">
-                    		<label>Status</label>
-                    		<div class="input-group">
-        						<div id="status-group" class="btn-group">
-        							<button type="button" class="btn btn-default" id="candistat">{{ $statusList[$candidate->status] }}</button>
-        							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-        								<span class="caret"></span> 
-        								<span class="sr-only">Select Status</span>
-        							</button>
-        							<ul class="dropdown-menu" role="menu">
-        								<li><a href="REJ">Rejected</a></li>
-        								<li><a href="SLT">Shortlisted</a></li>
-        								<li class="divider"></li>
-        								<li><a href="WTG">Waiting</a></li>
-        								<li><a href="SEL">Selected</a></li>
-        								<li><a href="NEG">Negotiate</a></li>
-        								<li class="divider"></li>
-        								<li><a href="CNF">Confirmed</a></li>
-        								<li><a href="JND">Joined</a></li>
-        							</ul>
-        						</div>
-        					</div>
-                    	</div>
-                    	<div class="col-md-4">
-                    		@if ($candidate->status == 'INV' && !$layout)
-                    			<label>Interview Scheduled at</label>
-                    			@if (empty($candidate->interview))
-                        		<div class="input-group" style="width: 250px;">
-            						<div class="input-group-addon">
-            							<i class="fa fa-clock-o"></i>
+                    @if (!$layout)
+                        <hr>
+                        <div class="row">
+                        	<div class="col-md-4">
+                        		<label>Status</label>
+                        		<div class="input-group">
+            						<div id="status-group" class="btn-group">
+            							<button type="button" class="btn btn-default" id="candistat">{{ $statusList[$candidate->status] }}</button>
+            							<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            								<span class="caret"></span> 
+            								<span class="sr-only">Select Status</span>
+            							</button>
+            							<ul class="dropdown-menu" role="menu">
+            								<li><a href="REJ">Rejected</a></li>
+            								<li><a href="SLT">Shortlisted</a></li>
+            								<li class="divider"></li>
+            								<li><a href="WTG">Waiting</a></li>
+            								<li><a href="SEL">Selected</a></li>
+            								<li><a href="NEG">Negotiate</a></li>
+            								<li class="divider"></li>
+            								<li><a href="CNF">Confirmed</a></li>
+            								<li><a href="JND">Joined</a></li>
+            							</ul>
             						</div>
-            						<input type="text"
-            							class="form-control pull-right"
-            							id="reservationtime">
             					</div>
-            					@else
-            					<div class="input-group" style="width: 250px;">
-            						<div class="input-group-addon">
-            							<i class="fa fa-clock-o"></i>
-            						</div>
-            						<input type="text"
-            							readonly
-            							value="{{ date('dS M, Y - h:i a', strtotime($candidate->interview)) }}"
-            							class="form-control pull-right">
-            					</div>
+                        	</div>
+                        	<div class="col-md-4">
+                        		@if ($candidate->status == 'INV')
+                        			<label>Interview Scheduled at</label>
+                        			@if (empty($candidate->interview))
+                            		<div class="input-group" style="width: 250px;">
+                						<div class="input-group-addon">
+                							<i class="fa fa-clock-o"></i>
+                						</div>
+                						<input type="text"
+                							class="form-control pull-right"
+                							id="reservationtime">
+                					</div>
+                					@else
+                					<div class="input-group" style="width: 250px;">
+                						<div class="input-group-addon">
+                							<i class="fa fa-clock-o"></i>
+                						</div>
+                						<input type="text"
+                							readonly
+                							value="{{ date('dS M, Y - h:i a', strtotime($candidate->interview)) }}"
+                							class="form-control pull-right">
+                					</div>
+                					@endif
             					@endif
-        					@endif
-                    	</div>
-                    </div>
+                        	</div>
+                        </div>
+                    @endif
 				</div>
             	<div class="col-md-3">
             		<center>
