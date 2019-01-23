@@ -22,7 +22,7 @@
             	<div class="col-md-2">
             		<img src="{{ Avatar::create($candidate->name)->toBase64() }}" style="height: 130px;">
             	</div>
-            	<div class="col-md-8">
+            	<div class="col-md-7">
             		<h2>{{ $candidate->name }}</h2>
             		<p>
             			<a href="mailto: {{ $candidate->email }}">{{ $candidate->email }}</a>
@@ -42,7 +42,7 @@
                     <hr>
                     
                     <div class="row">
-                    	<div class="col-md-3">
+                    	<div class="col-md-4">
                     		<label>Status</label>
                     		<div class="input-group">
         						<div id="status-group" class="btn-group">
@@ -92,7 +92,7 @@
                     	</div>
                     </div>
 				</div>
-            	<div class="col-md-2">
+            	<div class="col-md-3">
             		<center>
                 		<div id="sellPerCirc" class="perCirc">
                             <div class="perCircInner">
