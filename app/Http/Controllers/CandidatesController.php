@@ -333,8 +333,8 @@ class CandidatesController extends Controller
     public function status(Request $request) 
     {
         $res = false;
-        $cid = Input::get('cid', null);
-        $stat = Input::get('status', null);
+        $cid = Input::get('cid', false);
+        $stat = Input::get('status', false);
         
         if ($cid && $stat) {
             
@@ -347,6 +347,34 @@ class CandidatesController extends Controller
                     'cid' => $cid,
                     'uid' => Auth::user()->id,
                     'comment' => Candidate::$statusComments[$stat]
+                ]);
+            }
+        }
+        
+        return response()->json([
+            'success' => $res
+        ]); 
+    }
+    
+    public function interview() 
+    {
+        $res = false;
+        $cid = Input::get('cid', false);
+        $inv = Input::get('interview', false);
+        
+        if (!empty($cid) && !empty($inv)) {
+            
+            $invTime = date('Y-m-d H:i:s', strtotime($inv));
+            
+            $res = Candidate::findOrFail($cid)
+            ->update(['interview' => $invTime]);
+            
+            // Write a comment of this event for the candidate
+            if ($res) {
+                CandidateComment::create([
+                    'cid' => $cid,
+                    'uid' => Auth::user()->id,
+                    'comment' => 'Interview scheduled at ' . date('d/m/Y h:m a', strtotime($invTime))
                 ]);
             }
         }
@@ -420,7 +448,7 @@ class CandidatesController extends Controller
             ]));
         } catch(\Exception $e) {}
         
-        return redirect()->intended('/candidate');
+        return back()->withInput();
     }
     
     /**

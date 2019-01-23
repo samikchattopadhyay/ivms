@@ -15,7 +15,8 @@ class Candidate extends Model
         'name', 'email', 'location', 'source', 
         'job_id', 'notice_period', 'cv_file',
         'mobile', 'cv_keywords', 'cv_text',
-        'cv_match_percent', 'qsent', 'status'
+        'cv_match_percent', 'qsent', 'status',
+        'interview'
     ];
     
     public static $statusList = array(
