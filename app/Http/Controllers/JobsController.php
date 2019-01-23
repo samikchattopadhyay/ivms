@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\QuestionGroup;
 use App\Job;
 use App\User;
+use App\Notification;
 
 class JobsController extends Controller
 {
@@ -66,7 +67,7 @@ class JobsController extends Controller
         ]);
         
         // Add the question
-        Job::create([
+        $jid = Job::create([
             'position' => $request['position'],
             'vacancies' => $request['vacancies'],
             'location' => $request['location'],
@@ -77,7 +78,15 @@ class JobsController extends Controller
             'expiry_date' => $request['expiry_date'],
             'interviewer_id' => $request['interviewer_id'],
             'hr_id' => $request['hr_id'],
-        ]);
+        ])->id;
+        
+        // Add notifications for interviewer and HR manager
+        Notification::add('New job added', "New job '{$request['position']}' has been added. Please take necessary actions.", [
+            $request['interviewer_id'],
+            $request['hr_id']
+        ], route('job.edit', [
+            'id' => $jid
+        ]));
         
         return redirect()->intended( route('job.index') );
     }

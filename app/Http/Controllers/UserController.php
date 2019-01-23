@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User;
+use App\UserNotification;
 
 class UserController extends Controller
 {
@@ -132,5 +133,15 @@ class UserController extends Controller
     {
         User::where('id', $id)->delete();
         return redirect()->intended('/user');
+    }
+    
+    public function notified(Request $request)
+    {
+        return response()->json([
+            'success' => UserNotification::find($request->id)
+            ->update([
+                'seen' => 1
+            ])
+        ]);
     }
 }

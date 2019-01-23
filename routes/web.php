@@ -20,6 +20,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('job', 'JobsController');
     Route::resource('question', 'QuestionsController');
     Route::resource('candidate', 'CandidatesController');
+
+    Route::post('/users/notified', 'UserController@notified');
     
     Route::get('/', 'HomeController@index');
     Route::get('/home', 'HomeController@index')->name('home');

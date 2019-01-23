@@ -120,29 +120,58 @@
 						</li>
 						<!-- Notifications: style can be found in dropdown.less -->
 						
+						@php
+						$userNotificationCount = IvmsNotifier::countNew(Auth::user()->id);
+						$userNotifications = IvmsNotifier::getNew(Auth::user()->id, 10);
+						@endphp
+						
 						<li class="dropdown notifications-menu">
 							<a href="#" class="dropdown-toggle" data-toggle="dropdown"> 
     							<i class="fa fa-bell-o"></i> 
-    							<span class="label label-warning">{{ Auth::user()->notification_count }}</span>
+    							@if ($userNotificationCount)
+    							<span class="label label-danger" id="notival">{{ $userNotificationCount }}</span>
+								@endif
 							</a>
 							<ul class="dropdown-menu">
-								<li class="header">You have {{ Auth::user()->notification_count ?? 'no' }} notifications</li>
+								<li class="header"><center>You have {{ $userNotificationCount }} new notifications</center></li>
 								<li>
 									<!-- inner menu: contains the actual data -->
-									<ul class="menu">
-										@if (Auth::user()->notification_count)
+									<ul id="noties" class="menu">
+										@if (count($userNotifications))
 											@foreach ($userNotifications as $noti)
     										<li>
-    											<a href="#"><i class="fa fa-{{ $noti->faIcon }} text-{{ $noti->iconColor }}"></i> {{ $noti->notification }}</a>
+    											<a data-unid="{{ $noti->unid }}"
+    												target="{{ empty($noti->target) ? '_parent' : '_blank' }}" 
+        											href="{{ $noti->target ?? '#' }}">
+        											<i class="fa fa-{{ @$noti->faIcon }} text-{{ @$noti->iconColor }}"></i> 
+        											{{ $noti->message }}
+    											</a>
     										</li>
     										@endforeach
 										@endif
 										
 									</ul>
 								</li>
-								<li class="footer"><a href="/user/notifications">View all</a></li>
 							</ul>
 						</li>
+						
+						<script>
+                        $(document).ready(function() {
+                        	$('body').on('click', '#noties li a', function(resp) {
+                        
+                        		var unId = $(this).data('unid');
+                        
+                        		$.post('/users/notified', {
+                        			_token: $('meta[name="csrf-token"]').attr('content'),
+                        			id: unId,
+                        		}, function(response) {
+                        			var notival = parseInt($('#notival').text());
+                        			$('#notival').text(notival - 1);
+                        		}, 'json');
+                        		
+                        	});
+                        });
+						</script>
 						<!-- Tasks: style can be found in dropdown.less -->
 						
 						
