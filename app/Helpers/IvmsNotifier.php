@@ -31,7 +31,7 @@ class IvmsNotifier {
             'un.uid' => $uid,
             'un.seen' => 0
         ])
-        ->select(['un.id as unid', 'n.message', 'n.target'])
+        ->select(['un.id as unid', 'n.subject', 'n.message', 'n.target'])
         ->orderBy('n.id', 'desc')
         ->limit($limit)
         ->get();

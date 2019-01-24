@@ -133,7 +133,9 @@
 								@endif
 							</a>
 							<ul class="dropdown-menu">
-								<li class="header"><center>You have {{ $userNotificationCount }} new notifications</center></li>
+								@if ($userNotificationCount == 0)
+								<li class="header"><center>You have no new notifications</center></li>
+								@else
 								<li>
 									<!-- inner menu: contains the actual data -->
 									<ul id="noties" class="menu">
@@ -142,7 +144,8 @@
     										<li>
     											<a data-unid="{{ $noti->unid }}"
     												target="{{ empty($noti->target) ? '_parent' : '_blank' }}" 
-        											href="{{ $noti->target ?? '#' }}">
+        											href="{{ $noti->target ?? '#' }}"
+        											title="{{ $noti->message }}">
         											<i class="fa fa-{{ @$noti->faIcon }} text-{{ @$noti->iconColor }}"></i> 
         											{{ $noti->message }}
     											</a>
@@ -152,6 +155,7 @@
 										
 									</ul>
 								</li>
+								@endif
 							</ul>
 						</li>
 						

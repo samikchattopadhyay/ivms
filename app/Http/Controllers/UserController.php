@@ -98,7 +98,7 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $user = User::findOrFail($id);
+        User::findOrFail($id);
         
         $constraints = [
             'name' => 'required|max:100',

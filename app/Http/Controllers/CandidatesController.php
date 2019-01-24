@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Mail\SendEmail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Input;
+use App\Notification;
 
 class CandidatesController extends Controller
 {
@@ -110,9 +111,17 @@ class CandidatesController extends Controller
             'cv_match_percent' => isset($study['match']) ? $study['match'] : 0,
         ];
         
-        $id = Candidate::create($inputs)->id;
+        $cid = Candidate::create($inputs)->id;
         
-        Storage::put('cv/txt/' . $id . '.txt', $cvText);
+        Storage::put('cv/txt/' . $cid . '.txt', $cvText);
+        
+        $job = Job::find($request['job_id']);
+        
+        // Add notifications for interviewer and HR manager
+        Notification::add('New candidate added', "New candidate '{$request['name']}' has been added for job '{$job->position}'.", [
+            $job->interviewer_id,
+            $job->hr_id
+        ], "/candidates/preview/{$cid}/ex");
         
         return redirect()->intended('/candidate');
     }
@@ -343,6 +352,22 @@ class CandidatesController extends Controller
             
             // Write a comment of this event for the candidate
             if ($res) {
+                
+                // Get candidate's job ID
+                $candidate = Candidate::find($cid);
+                
+                // Get job details
+                $job = Job::find($candidate->job_id);
+                
+                // Add notifications
+                if ($stat == 'SLT') {
+                    Notification::add('Candidate shortlisted', "{$candidate->name} has been shortlisted. Need to send Question set.", [
+                        $job->interviewer_id,
+                        $job->hr_id
+                    ], "/candidates/preview/{$cid}/ex");
+                }
+                
+                // Create auto comment for the candidate
                 CandidateComment::create([
                     'cid' => $cid,
                     'uid' => Auth::user()->id,
@@ -433,6 +458,15 @@ class CandidatesController extends Controller
             'uid' => Auth::user()->id,
             'comment' => Candidate::$statusComments['QNA']
         ]);
+        
+        // Get job details
+        $job = Job::find($candidate->job_id);
+        
+        // Add notifications for interviewer and HR manager
+        Notification::add('Question set emailed', "Question set has been emailed to {$candidate->name} ({$candidate->email}).", [
+            $job->interviewer_id,
+            $job->hr_id
+        ], $qsetUrl);
         
         // Send email
         try {
