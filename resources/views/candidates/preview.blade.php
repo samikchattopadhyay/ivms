@@ -291,11 +291,14 @@
             						@else
             							@if (!empty($question->options))
             								@foreach ($question->options as $option)
+            									@if (isset($answers[$question->id]))
             									<div class="checkbox col-md-4">
                                                     <label>
-                                                      	<input type="checkbox" value="{{ $option->id }}" {{ in_array($option->id, $answers[$question->id]) ? 'checked' : '' }} disabled> {{ $option->label }}
+                                                      	<input type="checkbox" 
+                                                      		value="{{ $option->id }}" {{ in_array($option->id, $answers[$question->id]) ? 'checked' : '' }} disabled> {{ $option->label }}
                                                     </label>
                                                 </div>
+                                                @endif
             								@endforeach
             							@endif
             						@endif
