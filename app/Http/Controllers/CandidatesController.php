@@ -411,7 +411,7 @@ class CandidatesController extends Controller
                 CandidateComment::create([
                     'cid' => $cid,
                     'uid' => Auth::user()->id,
-                    'comment' => 'Interview scheduled at ' . date('d/m/Y h:m a', strtotime($invTime))
+                    'comment' => 'Interview scheduled at ' . date('dS M, Y - h:i a', strtotime($invTime))
                 ]);
             }
         }
