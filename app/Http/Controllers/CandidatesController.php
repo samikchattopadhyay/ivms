@@ -396,6 +396,18 @@ class CandidatesController extends Controller
             
             // Write a comment of this event for the candidate
             if ($res) {
+                
+                $candidate = Candidate::find($cid);
+                
+                // Get job details
+                $job = Job::find($candidate->job_id);
+                
+                // Add notifications for interviewer and HR manager
+                Notification::add('Interview scheduled', "Interview has been scheduled at " . date('dS M, Y - h:i a', strtotime($invTime)), [
+                    $job->interviewer_id,
+                    $job->hr_id
+                ], "/candidates/preview/{$cid}/ex");
+                
                 CandidateComment::create([
                     'cid' => $cid,
                     'uid' => Auth::user()->id,
