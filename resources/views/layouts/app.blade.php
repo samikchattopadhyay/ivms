@@ -162,15 +162,18 @@
 						<script>
                         $(document).ready(function() {
                         	$('body').on('click', '#noties li a', function(resp) {
-                        
+
+                                var that = $(this);
                         		var unId = $(this).data('unid');
                         
                         		$.post('/users/notified', {
                         			_token: $('meta[name="csrf-token"]').attr('content'),
                         			id: unId,
                         		}, function(response) {
-                        			var notival = parseInt($('#notival').text());
-                        			$('#notival').text(notival - 1);
+                        			var notival = parseInt($('#notival').text());'
+                        			notival = notival > 0 ? notival - 1 : 0;
+                        			$('#notival').text(notival);
+                        			that.parent().remove();
                         		}, 'json');
                         		
                         	});
