@@ -108,7 +108,7 @@
                     		role="button" 
                     		class="btn btn-xs btn-success" 
                             target="_blank"
-                            title="Download Resume/CV">Download</a>
+                            title="Download Resume/CV">CV</a>
                             
                         @if (empty($candidate->qsent))
                         	<a href="{{ route('candidates.email', ['cid' => $candidate->id]) }}" 
