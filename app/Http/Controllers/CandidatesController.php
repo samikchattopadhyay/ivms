@@ -361,11 +361,17 @@ class CandidatesController extends Controller
                 
                 // Add notifications
                 if ($stat == 'SLT') {
-                    Notification::add('Candidate shortlisted', "{$candidate->name} has been shortlisted. Need to send Question set.", [
-                        $job->interviewer_id,
-                        $job->hr_id
-                    ], "/candidates/preview/{$cid}/ex");
+                    $subject = 'Candidate shortlisted';
+                    $message = "{$candidate->name} has been shortlisted. Need to send Question set.";
+                } elseif ($stat == 'SEL') {
+                    $subject = 'Candidate selected';
+                    $message = "{$candidate->name} has been selected. Need to negotiate.";
                 }
+                
+                Notification::add($subject, $message, [
+                    $job->interviewer_id,
+                    $job->hr_id
+                ], "/candidates/preview/{$cid}/ex");
                 
                 // Create auto comment for the candidate
                 CandidateComment::create([
@@ -567,7 +573,7 @@ class CandidatesController extends Controller
         $job = Job::find($candidate->job_id);
         
         // Add notifications for interviewer and HR manager
-        Notification::add('Q&A submitted', "Answer sheet has been submitted by " . $candidate->name, [
+        Notification::add('Q&A submitted', "Answer sheet has been submitted by " . $candidate->name . '. Please schedule interview.', [
             $job->interviewer_id,
             $job->hr_id
         ], "/candidates/preview/{$candidate->id}/ex");
