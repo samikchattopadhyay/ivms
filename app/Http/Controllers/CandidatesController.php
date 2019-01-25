@@ -563,6 +563,15 @@ class CandidatesController extends Controller
         // Save the answers
         QuestionAnswer::insert($answers);
         
+        // Get job details
+        $job = Job::find($candidate->job_id);
+        
+        // Add notifications for interviewer and HR manager
+        Notification::add('Q&A submitted', "Answer sheet has been submitted by " . $candidate->name, [
+            $job->interviewer_id,
+            $job->hr_id
+        ], "/candidates/preview/{$candidate->id}/ex");
+        
         // Comment - Answers submitted by the candidate
         CandidateComment::create([
             'cid' => $candidate->id,
