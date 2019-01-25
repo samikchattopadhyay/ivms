@@ -170,7 +170,10 @@
                         			_token: $('meta[name="csrf-token"]').attr('content'),
                         			id: unId,
                         		}, function(response) {
-                        			var notival = parseInt($('#notival').text());'
+                        			var notival = $('#notival').text();
+                        			console.log(notival);
+                        			notival = parseInt(notival);
+                        			console.log(notival);
                         			notival = notival > 0 ? notival - 1 : 0;
                         			console.log(notival);
                         			$('#notival').text(notival);
