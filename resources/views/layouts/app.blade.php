@@ -172,6 +172,7 @@
                         		}, function(response) {
                         			var notival = parseInt($('#notival').text());'
                         			notival = notival > 0 ? notival - 1 : 0;
+                        			console.log(notival);
                         			$('#notival').text(notival);
                         			that.parent().remove();
                         		}, 'json');
