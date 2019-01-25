@@ -171,11 +171,8 @@
                         			id: unId,
                         		}, function(response) {
                         			var notival = $('#notival').text();
-                        			console.log(notival);
                         			notival = parseInt(notival);
-                        			console.log(notival);
                         			notival = notival > 0 ? notival - 1 : 0;
-                        			console.log(notival);
                         			$('#notival').text(notival);
                         			that.parent().remove();
                         		}, 'json');
