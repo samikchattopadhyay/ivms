@@ -1,4 +1,5 @@
 *.sql
 *.env
 vendor/*
+storage/*
 *.env.swp

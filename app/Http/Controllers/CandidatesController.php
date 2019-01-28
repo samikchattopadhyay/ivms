@@ -19,6 +19,7 @@ use App\Mail\SendEmail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Input;
 use App\Notification;
+use App\Helpers\IvmsTextExtractor;
 
 class CandidatesController extends Controller
 {
@@ -90,13 +91,20 @@ class CandidatesController extends Controller
             'email' => 'required|email|max:255|unique:candidates',
             'job_id' => 'required',
             'mobile' => 'required',
-            'cv_file' => 'required|max:10000|mimes:doc,docx,pdf',
-            'cv_text' => 'required',
+            'cv_file' => 'required|max:10000|mimes:docx,pdf',
         ]);
         
-        $cvText = htmlentities(mb_convert_encoding($request['cv_text'], "UTF-8"));
-        
+        $uploadedCvPath = $request->file('cv_file')->store('cv');
+        $uploadedCvPath = storage_path('app/' . $uploadedCvPath); 
+        $cvText = IvmsTextExtractor::extract($uploadedCvPath);
         $study = $this->studyTheCv($cvText, $request['job_id']);
+        
+        if ($study['match'] == 0) {
+            return back()->with('status', [
+                'type' => 'danger',
+                'msg' => 'CV does not match any keywords required for this job. '
+            ]);
+        }
         
         $inputs = [
             'name' => $request['name'],
@@ -106,15 +114,18 @@ class CandidatesController extends Controller
             'source' => $request['source'],
             'notice_period' => $request['notice_period'],
             'mobile' => $request['mobile'],
-            'cv_file' => $request->file('cv_file')->store('cv'),
+            'cv_file' => $uploadedCvPath,
             'cv_keywords' => isset($study['found']) ? $study['found'] : '',
             'cv_match_percent' => isset($study['match']) ? $study['match'] : 0,
         ];
         
+        // Create new candidate
         $cid = Candidate::create($inputs)->id;
         
+        // Store the extracted CV text
         Storage::put('cv/txt/' . $cid . '.txt', $cvText);
         
+        // Get candidates job details
         $job = Job::find($request['job_id']);
         
         // Add notifications for interviewer and HR manager
@@ -179,7 +190,7 @@ class CandidatesController extends Controller
             'name' => 'required|max:100',
             'job_id' => 'required',
             'mobile' => 'required',
-            'cv_file' => 'max:10000|mimes:doc,docx,pdf',
+            'cv_file' => 'max:10000|mimes:docx,pdf',
         ];
         
         $cvText = htmlentities(mb_convert_encoding($request['cv_text'], "UTF-8"));
@@ -302,9 +313,14 @@ class CandidatesController extends Controller
         $candidate = Candidate::where('candidates.id', $cid)
         ->leftJoin('jobs', 'jobs.id', '=', 'candidates.job_id')
         ->select(['candidates.*', 'jobs.position'])
-        ->first();
+        ->firstOrFail();
         
-        $candidate->cv_text = Storage::get('cv/txt/' . $cid . '.txt');
+        try {
+            $candidate->cv_text = Storage::get('cv/txt/' . $cid . '.txt');
+        } catch (\Exception $e) {
+            $candidate->cv_text = 'CV text file not found';
+        }
+        
         $study = $this->studyTheCv($candidate->cv_text, $candidate->job_id);
         $questions = $this->studyTheCvAndGetQuestions($candidate->cv_text, $candidate->job_id);
         

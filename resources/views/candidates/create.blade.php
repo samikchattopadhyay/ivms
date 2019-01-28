@@ -17,7 +17,7 @@
 
 	<!-- SELECT2 EXAMPLE -->
 	<div class="box box-default">
-		
+	
 		<form role="form" 
 		@if($action== 'Add New')
         	action="{{ route('candidate.store') }}" 
@@ -40,6 +40,20 @@
 			<!-- /.box-header -->
 			
 			<div class="box-body">
+			
+				@if (session('status'))
+					@php
+						$status = session('status')
+					@endphp
+					<div class="row">
+						<div class="col-md-12">
+							<div class="alert alert-{{ $status['type'] }}">
+                                {{ $status['msg'] }}
+                            </div>
+						</div>
+                    </div>
+                @endif
+			
 				<div class="row">
 					<div class="col-md-6">
 						
@@ -155,7 +169,7 @@
 						<!-- /.form-group -->
 						
 						<div class="form-group{{ $errors->has('cv_file') ? ' has-error' : '' }}">
-                            <label for="cv_file">Resume / CV <em style="color: #AAA;">(doc, docx, pdf file only)</em></label>
+                            <label for="cv_file">Resume / CV <em style="color: #AAA;">(docx, pdf file only)</em></label>
                             <input id="cv_file" 
                             	type="file" 
                             	name="cv_file" 
@@ -172,26 +186,6 @@
 					<!-- /.col -->
 				</div>
 				<!-- /.row -->
-				
-				
-				<div class="row">
-					<div class="col-md-12">
-						
-						<div class="form-group{{ $errors->has('cv_text') ? ' has-error' : '' }}">
-                            <label for="cv_text">CV Text <em style="color: #AAA;">( Copy the text of the CV, this will be used to match the keywords)</em></label>
-                            <textarea id="cv_text" 
-                            	rows="10"
-                                name="cv_text"
-                            	class="form-control"
-                                required>{{ empty(old('cv_text', '')) ? (isset($candidate->cv_text) ? $candidate->cv_text : '') : old('cv_text') }}</textarea>
-                            @if ($errors->has('cv_text')) 
-                            	<span class="help-block"> 
-                            		<strong>{{ $errors->first('cv_text') }}</strong>
-                        		</span> 
-                    		@endif
-                        </div>
-                    </div>
-                </div>
 				
 			</div>
 			<!-- /.box-body -->

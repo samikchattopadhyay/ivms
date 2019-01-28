@@ -226,7 +226,9 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         
+        // IVMS Helpers
         'IvmsNotifier' => App\Helpers\IvmsNotifier::class,
+        'IvmsTextExtractor' => App\Helpers\IvmsTextExtractor::class,
 
     ],
 
