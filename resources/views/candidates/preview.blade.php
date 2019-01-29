@@ -71,25 +71,36 @@
                     	<div class="col-md-6">
                     		@if ($candidate->status == 'INV')
                     			<label>Interview Scheduled at</label>
-                    			@if (empty($candidate->interview) && !$layout)
-                        		<div class="input-group" style="width: 250px;">
-            						<div class="input-group-addon">
-            							<i class="fa fa-clock-o"></i>
-            						</div>
-            						<input type="text"
-            							class="form-control pull-right"
-            							id="reservationtime">
-            					</div>
-            					@else
-            					<div class="input-group" style="width: 250px;">
-            						<div class="input-group-addon">
-            							<i class="fa fa-clock-o"></i>
-            						</div>
-            						<input type="text"
-            							readonly
-            							value="{{ date('dS M, Y - h:i a', strtotime($candidate->interview)) }}"
-            							class="form-control pull-right">
-            					</div>
+                    			@if (isset($candidate->interview))
+                        			@if (empty($candidate->interview) && !$layout)
+                            		<div class="input-group" style="width: 250px;">
+                						<div class="input-group-addon">
+                							<i class="fa fa-clock-o"></i>
+                						</div>
+                						<input type="text"
+                							class="form-control pull-right"
+                							id="reservationtime">
+                					</div>
+                					@else
+                					<div class="input-group" style="width: 250px;">
+                						<div class="input-group-addon">
+                							<i class="fa fa-clock-o"></i>
+                						</div>
+                						<input type="text"
+                							readonly
+                							value="{{ date('dS M, Y - h:i a', strtotime($candidate->interview)) }}"
+                							class="form-control pull-right">
+                					</div>
+                					@endif
+                				@else
+                					<div class="input-group" style="width: 250px;">
+                						<div class="input-group-addon">
+                							<i class="fa fa-clock-o"></i>
+                						</div>
+                						<input type="text"
+                							class="form-control pull-right"
+                							id="reservationtime">
+                					</div>
             					@endif
         					@endif
                     	</div>
