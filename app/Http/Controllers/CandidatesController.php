@@ -384,10 +384,12 @@ class CandidatesController extends Controller
                     $message = "{$candidate->name} has been selected. Need to negotiate.";
                 }
                 
-                Notification::add($subject, $message, [
-                    $job->interviewer_id,
-                    $job->hr_id
-                ], "/candidates/preview/{$cid}/ex");
+                if (!empty($subject)) {
+                    Notification::add($subject, $message, [
+                        $job->interviewer_id,
+                        $job->hr_id
+                    ], "/candidates/preview/{$cid}/ex");
+                }
                 
                 // Create auto comment for the candidate
                 CandidateComment::create([
