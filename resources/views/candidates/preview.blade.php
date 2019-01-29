@@ -25,7 +25,7 @@
             	<div class="col-md-7">
             		<h2>{{ $candidate->name }}</h2>
             		<p>
-            			<a href="mailto: {{ $candidate->email }}">{{ $candidate->email }}</a>
+            			<a href="mailto: {{ $candidate->email }}">{{ $candidate->email }}</a> ({{ $candidate->mobile }})
             			<br>Suitable for <b>{{ $candidate->position }}</b>
             			<br>{!! !empty($candidate->location) ? 'From <b>' . $candidate->location . '</b>' : '' !!}
             		</p>
