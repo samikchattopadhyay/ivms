@@ -94,8 +94,8 @@ class CandidatesController extends Controller
             'cv_file' => 'required|max:10000|mimes:docx,pdf',
         ]);
         
-        $uploadedCvPath = $request->file('cv_file')->store('cv');
-        $uploadedCvPath = storage_path('app/' . $uploadedCvPath); 
+        $uploadedCv = $request->file('cv_file')->store('cv');
+        $uploadedCvPath = storage_path('app/' . $uploadedCv); 
         $cvText = trim(IvmsTextExtractor::extract($uploadedCvPath));
         
         if (empty($cvText)) {
@@ -121,7 +121,7 @@ class CandidatesController extends Controller
             'source' => $request['source'],
             'notice_period' => $request['notice_period'],
             'mobile' => $request['mobile'],
-            'cv_file' => $uploadedCvPath,
+            'cv_file' => $uploadedCv,
             'cv_keywords' => isset($study['found']) ? $study['found'] : '',
             'cv_match_percent' => isset($study['match']) ? $study['match'] : 0,
         ];
@@ -522,11 +522,16 @@ class CandidatesController extends Controller
      * @param  string  $name
      * @return \Illuminate\Http\Response
      */
-    public function load($cid) {
+    public function load($cid) 
+    {
         $candidate = Candidate::findOrFail($cid);
         $path = storage_path().'/app/' . $candidate->cv_file;
+        
         if (file_exists($path)) {
-            return Response::download($path);
+            $fileName = str_replace(' ', '_', $candidate->name) . '.' . pathinfo($path)['extension'];
+            return Response::download($path, $fileName);
+        } else {
+            die('CV file not found');
         }
     }
     
