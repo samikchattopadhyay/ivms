@@ -41,6 +41,12 @@
 			
 			<div class="box-body">
 			
+				@if(session()->has('message'))
+                    <div class="alert alert-{{ session()->get('message')['type'] }}">
+                        {{ session()->get('message')['text'] }}
+                    </div>
+                @endif
+			
 				@if (session('status'))
 					@php
 						$status = session('status')

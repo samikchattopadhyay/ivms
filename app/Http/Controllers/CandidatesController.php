@@ -96,9 +96,16 @@ class CandidatesController extends Controller
         
         $uploadedCvPath = $request->file('cv_file')->store('cv');
         $uploadedCvPath = storage_path('app/' . $uploadedCvPath); 
-        $cvText = IvmsTextExtractor::extract($uploadedCvPath);
-        $study = $this->studyTheCv($cvText, $request['job_id']);
+        $cvText = trim(IvmsTextExtractor::extract($uploadedCvPath));
         
+        if (empty($cvText)) {
+            return redirect()->back()->with('message', [
+                'type' => 'error', 
+                'text' => 'CV could not be read. Please upload a valid PDF file.'
+            ]);
+        }
+        
+        $study = $this->studyTheCv($cvText, $request['job_id']);
         if ($study['match'] == 0) {
             return back()->with('status', [
                 'type' => 'danger',
@@ -193,9 +200,7 @@ class CandidatesController extends Controller
             'cv_file' => 'max:10000|mimes:docx,pdf',
         ];
         
-        $cvText = htmlentities(mb_convert_encoding($request['cv_text'], "UTF-8"));
-        $study = $this->studyTheCv($cvText, $request['job_id']);
-        
+        // Prepare DB update
         $input = [
             'name' => $request['name'],
             'job_id' => $request['job_id'],
@@ -203,16 +208,38 @@ class CandidatesController extends Controller
             'source' => $request['source'],
             'notice_period' => $request['notice_period'],
             'mobile' => $request['mobile'],
-            'cv_keywords' => isset($study['found']) ? $study['found'] : '',
-            'cv_match_percent' => isset($study['match']) ? $study['match'] : 0,
         ];
         
-        // Upload CV
+        // Save the CV if uploaded via form
         if (!empty($request->file('cv_file'))) {
-            $input['cv_file'] = $request->file('cv_file')->store('cv');
+            
+            // Upload
+            $input['cv_file'] = $uploadedCvPath = $request->file('cv_file')->store('cv');
+            
+            // Extract text
+            $uploadedCvPath = storage_path('app/' . $uploadedCvPath);
+            $cvText = trim(IvmsTextExtractor::extract($uploadedCvPath));
+            
+            if (empty($cvText)) {
+                return redirect()->back()->with('message', [
+                    'type' => 'error',
+                    'text' => 'CV could not be read. Please upload a valid PDF file.'
+                ]);
+            }
+            
+            // Study the CV
+            $study = $this->studyTheCv($cvText, $request['job_id']);
+            
             Storage::put('cv/txt/' . $id . '.txt', $cvText);
         }
         
+        // Update the study results
+        if (isset($study)) {
+            $input['cv_keywords'] = isset($study['found']) ? $study['found'] : '';
+            $input['cv_match_percent'] = isset($study['match']) ? $study['match'] : 0;
+        }
+        
+        // Validate
         $this->validate($request, $constraints);
         Candidate::where('id', $id)
             ->update($input);
@@ -241,8 +268,52 @@ class CandidatesController extends Controller
     public function recalc(Request $request) 
     {
         $candidate = Candidate::findOrFail($request->id);
-        $candidate->cv_text = Storage::get('cv/txt/' . $request->id . '.txt');
-        $study = $this->studyTheCv($candidate->cv_text, $candidate->job_id);
+        
+        $cvReadError = false;
+        
+        try {
+            $cvText = trim(Storage::get('cv/txt/' . $request->id . '.txt'));
+        } catch(\Exception $e) {
+            $cvReadError = true;
+        }
+        
+        if (empty($cvText)) {
+            $cvReadError = true;
+        }
+        
+        // If CV could not be read
+        // then try to read the file
+        if ($cvReadError) {
+            
+            // Find the uploaded CV file
+            $uploadedCvPath = $candidate->cv_file;
+            
+            // Extract text from the CV
+            $uploadedCvPath = storage_path('app/' . $uploadedCvPath);
+            
+            // Check CV file exists or not
+            // If not found then dislay proper error message
+            if (!file_exists($uploadedCvPath)) {
+                return redirect()->back()->with('message', [
+                    'type' => 'error',
+                    'text' => 'CV file could not be found. Please upload a proper (.docx/.pdf) CV file.'
+                ]);
+            }
+            
+            $cvText = trim(IvmsTextExtractor::extract($uploadedCvPath));
+            if (empty($cvText)) {
+                return redirect()->back()->with('message', [
+                    'type' => 'error',
+                    'text' => 'CV file could not be read. Please upload a valid PDF file.'
+                ]);
+            }
+            
+            // Re-save the CV text file
+            Storage::put('cv/txt/' . $request->id . '.txt', $cvText);
+        }
+        
+        // Study the CV text
+        $study = $this->studyTheCv($cvText, $candidate->job_id);
         Candidate::where('id', $request->id)
         ->update([
             'cv_keywords' => isset($study['found']) ? $study['found'] : '',

@@ -20,7 +20,6 @@
 				<div class="box-header">
 					<h3 class="box-title">List All {{ isset($job) && !empty($job) ? ' - ' . $job->position : '' }} ({{ $candidates->total() }})</h3>
 					<div class="box-tools">
-						
 						<form id="srch-frm" action="">
 							<div class="input-group input-group-sm" style="width: 450px;">
 								{{ csrf_field() }}
@@ -71,6 +70,12 @@
 				<!-- /.box-header -->
 				
 				<div class="box-body table-responsive no-padding">
+				
+					@if(session()->has('message'))
+                        <div style="margin: 5px;" class="alert alert-{{ session()->get('message')['type'] }}">
+                            {{ session()->get('message')['text'] }}
+                        </div>
+                    @endif
 				
 					<table class="table table-hover">
 						<tr>
